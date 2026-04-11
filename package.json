@@ -1,0 +1,36 @@
+{
+  "name": "syllabus",
+  "version": "0.2.0",
+  "description": "An agentic education builder that turns any topic into a fully interactive tutorial",
+  "type": "module",
+  "bin": {
+    "syllabus": "./src/cli/index.js"
+  },
+  "scripts": {
+    "start": "node src/cli/index.js",
+    "dev": "node --watch src/cli/index.js",
+    "test": "node --test src/**/*.test.js"
+  },
+  "keywords": [
+    "education",
+    "tutorial",
+    "ai",
+    "agentic",
+    "learning",
+    "interactive",
+    "react",
+    "copilot",
+    "claude"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "ora": "^8.1.0",
+    "fs-extra": "^11.2.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="320" viewBox="0 0 900 320">
+  <defs>
+    <!-- Background gradient -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0e1a"/>
+      <stop offset="50%" stop-color="#0f1629"/>
+      <stop offset="100%" stop-color="#0a0e1a"/>
+    </linearGradient>
+
+    <!-- Glow gradient for title -->
+    <linearGradient id="titleGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366f1">
+        <animate attributeName="stop-color" values="#6366f1;#818cf8;#6366f1" dur="4s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" stop-color="#a78bfa">
+        <animate attributeName="stop-color" values="#a78bfa;#c4b5fd;#a78bfa" dur="4s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stop-color="#22d3ee">
+        <animate attributeName="stop-color" values="#22d3ee;#67e8f9;#22d3ee" dur="4s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+
+    <!-- Accent line gradient -->
+    <linearGradient id="accentLine" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="transparent"/>
+      <stop offset="20%" stop-color="#6366f1"/>
+      <stop offset="50%" stop-color="#22d3ee"/>
+      <stop offset="80%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+
+    <!-- Scanning line gradient -->
+    <linearGradient id="scanLine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="transparent"/>
+      <stop offset="45%" stop-color="transparent"/>
+      <stop offset="50%" stop-color="#6366f140"/>
+      <stop offset="55%" stop-color="transparent"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+
+    <!-- Glow filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <filter id="softGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Dot pattern -->
+    <pattern id="dots" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
+      <circle cx="15" cy="15" r="0.8" fill="#6366f1" opacity="0.15"/>
+    </pattern>
+
+    <!-- Grid pattern -->
+    <pattern id="grid" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="60" stroke="#1e293b" stroke-width="0.5" opacity="0.4"/>
+      <line x1="0" y1="0" x2="60" y2="0" stroke="#1e293b" stroke-width="0.5" opacity="0.4"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="320" fill="url(#bg)" rx="16"/>
+
+  <!-- Grid overlay -->
+  <rect width="900" height="320" fill="url(#grid)" rx="16" opacity="0.5"/>
+
+  <!-- Dot pattern overlay -->
+  <rect width="900" height="320" fill="url(#dots)" rx="16"/>
+
+  <!-- Scanning line animation -->
+  <rect width="900" height="320" fill="url(#scanLine)" rx="16" opacity="0.6">
+    <animateTransform attributeName="transform" type="translate" from="0 -320" to="0 320" dur="6s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Decorative corner brackets -->
+  <!-- Top-left -->
+  <polyline points="30,50 30,30 50,30" fill="none" stroke="#6366f1" stroke-width="2" opacity="0.5"/>
+  <!-- Top-right -->
+  <polyline points="850,30 870,30 870,50" fill="none" stroke="#6366f1" stroke-width="2" opacity="0.5"/>
+  <!-- Bottom-left -->
+  <polyline points="30,270 30,290 50,290" fill="none" stroke="#22d3ee" stroke-width="2" opacity="0.5"/>
+  <!-- Bottom-right -->
+  <polyline points="850,290 870,290 870,270" fill="none" stroke="#22d3ee" stroke-width="2" opacity="0.5"/>
+
+  <!-- Horizontal accent line top -->
+  <line x1="100" y1="75" x2="800" y2="75" stroke="url(#accentLine)" stroke-width="1" opacity="0.6"/>
+
+  <!-- Floating particles -->
+  <circle cx="120" cy="100" r="2" fill="#6366f1" opacity="0.6">
+    <animate attributeName="cy" values="100;85;100" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="780" cy="130" r="1.5" fill="#22d3ee" opacity="0.5">
+    <animate attributeName="cy" values="130;115;130" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0.15;0.5" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="200" cy="250" r="1.8" fill="#a78bfa" opacity="0.4">
+    <animate attributeName="cy" values="250;235;250" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.4;0.1;0.4" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="700" cy="240" r="2.2" fill="#6366f1" opacity="0.5">
+    <animate attributeName="cy" values="240;225;240" dur="3.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0.15;0.5" dur="3.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="350" cy="80" r="1.2" fill="#22d3ee" opacity="0.3">
+    <animate attributeName="cy" values="80;68;80" dur="4.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="550" cy="270" r="1.6" fill="#818cf8" opacity="0.35">
+    <animate attributeName="cy" values="270;258;270" dur="5.5s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Book/page icon -->
+  <g transform="translate(370, 95)" opacity="0.9" filter="url(#softGlow)">
+    <rect x="0" y="0" width="28" height="36" rx="3" fill="none" stroke="#6366f1" stroke-width="1.8" opacity="0.7"/>
+    <line x1="6" y1="8" x2="22" y2="8" stroke="#6366f1" stroke-width="1.2" opacity="0.5"/>
+    <line x1="6" y1="14" x2="22" y2="14" stroke="#6366f1" stroke-width="1.2" opacity="0.5"/>
+    <line x1="6" y1="20" x2="16" y2="20" stroke="#6366f1" stroke-width="1.2" opacity="0.5"/>
+    <rect x="5" y="26" width="18" height="4" rx="1" fill="#22d3ee" opacity="0.3"/>
+  </g>
+
+  <!-- Main title: SYLLABUS -->
+  <text x="450" y="165" text-anchor="middle" font-family="'SF Mono', 'Cascadia Code', 'JetBrains Mono', 'Fira Code', Consolas, monospace" font-size="56" font-weight="700" fill="url(#titleGlow)" letter-spacing="12" filter="url(#glow)">
+    SYLLABUS
+  </text>
+
+  <!-- Subtitle glow underline -->
+  <line x1="250" y1="185" x2="650" y2="185" stroke="url(#accentLine)" stroke-width="1" opacity="0.4"/>
+
+  <!-- Tagline -->
+  <text x="450" y="215" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="16" fill="#94a3b8" letter-spacing="4">
+    TURN ANY TOPIC INTO AN INTERACTIVE TUTORIAL
+  </text>
+
+  <!-- Agent chips -->
+  <g transform="translate(130, 248)" opacity="0.8">
+    <!-- chip bg -->
+    <rect x="0" y="0" width="100" height="26" rx="13" fill="#1e293b" stroke="#6366f130" stroke-width="1"/>
+    <text x="50" y="17" text-anchor="middle" font-family="'Inter', system-ui, sans-serif" font-size="11" fill="#818cf8">🔍 Research</text>
+  </g>
+  <g transform="translate(0,0)" opacity="0.8">
+    <rect x="245" y="248" width="88" height="26" rx="13" fill="#1e293b" stroke="#6366f130" stroke-width="1"/>
+    <text x="289" y="265" text-anchor="middle" font-family="'Inter', system-ui, sans-serif" font-size="11" fill="#818cf8">🎯 Review</text>
+  </g>
+  <g transform="translate(0,0)" opacity="0.8">
+    <rect x="348" y="248" width="82" height="26" rx="13" fill="#1e293b" stroke="#6366f130" stroke-width="1"/>
+    <text x="389" y="265" text-anchor="middle" font-family="'Inter', system-ui, sans-serif" font-size="11" fill="#818cf8">✍️ Write</text>
+  </g>
+  <g transform="translate(0,0)" opacity="0.8">
+    <rect x="445" y="248" width="78" height="26" rx="13" fill="#1e293b" stroke="#6366f130" stroke-width="1"/>
+    <text x="484" y="265" text-anchor="middle" font-family="'Inter', system-ui, sans-serif" font-size="11" fill="#818cf8">🧩 Quiz</text>
+  </g>
+  <g transform="translate(0,0)" opacity="0.8">
+    <rect x="538" y="248" width="92" height="26" rx="13" fill="#1e293b" stroke="#22d3ee30" stroke-width="1"/>
+    <text x="584" y="265" text-anchor="middle" font-family="'Inter', system-ui, sans-serif" font-size="11" fill="#67e8f9">🎨 Design</text>
+  </g>
+  <g transform="translate(0,0)" opacity="0.8">
+    <rect x="645" y="248" width="82" height="26" rx="13" fill="#1e293b" stroke="#22d3ee30" stroke-width="1"/>
+    <text x="686" y="265" text-anchor="middle" font-family="'Inter', system-ui, sans-serif" font-size="11" fill="#67e8f9">⚛️ Build</text>
+  </g>
+
+  <!-- Connecting dots between chips -->
+  <circle cx="237" cy="261" r="2" fill="#6366f1" opacity="0.4"/>
+  <circle cx="341" cy="261" r="2" fill="#6366f1" opacity="0.4"/>
+  <circle cx="437" cy="261" r="2" fill="#6366f1" opacity="0.4"/>
+  <circle cx="530" cy="261" r="2" fill="#6366f1" opacity="0.4"/>
+  <circle cx="637" cy="261" r="2" fill="#22d3ee" opacity="0.4"/>
+
+  <!-- Bottom accent line -->
+  <line x1="100" y1="295" x2="800" y2="295" stroke="url(#accentLine)" stroke-width="1" opacity="0.3"/>
+
+  <!-- Version tag -->
+  <text x="450" y="310" text-anchor="middle" font-family="'SF Mono', Consolas, monospace" font-size="10" fill="#475569" letter-spacing="2">
+    v0.2.0 · AGENTIC EDUCATION BUILDER
+  </text>
+</svg>
