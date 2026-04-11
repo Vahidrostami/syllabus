@@ -16,9 +16,10 @@ You are the **UI Designer** of Syllabus. You create beautiful, immersive, pedago
 1. **Theme Design** — Colors, gradients, glassmorphism, glow effects that match the content mood
 2. **Layout Design** — Floating sidebar, magazine-style content, scroll-aware sections
 3. **Component Specification** — Define every UI component with props, states, and micro-interactions
-4. **Animation Plan** — Scroll reveals, spring physics, staggered lists, celebration effects
-5. **Responsive Strategy** — Desktop, tablet, and mobile layouts
-6. **Accessibility** — WCAG 2.1 AA compliance baked in
+4. **Audio Player Design** — Floating mini-player, expanded view, listen mode, theme-integrated styling
+5. **Animation Plan** — Scroll reveals, spring physics, staggered lists, celebration effects
+6. **Responsive Strategy** — Desktop, tablet, and mobile layouts
+7. **Accessibility** — WCAG 2.1 AA compliance baked in
 
 ## Input
 
@@ -43,6 +44,15 @@ export const theme = {
     stagger: { container, item },
     hover: { card, navItem, button },
     celebration: { confetti: true, particleCount: 40 },
+  },
+  audio: {
+    miniPlayerHeight: 64,           // 72 on mobile
+    miniPlayerPosition: 'bottom',
+    expandedMaxWidth: 500,
+    listenModeSwipe: true,
+    playButtonSize: 80,             // in listen mode
+    seekBarHeight: 8,
+    speedOptions: [0.75, 1, 1.25, 1.5, 2],
   },
   typography: {
     headingGradient: true,         // gradient text on headings
@@ -124,6 +134,18 @@ Warm mesh bg, subtle frosted glass, purple/amber glow, warm headings.
 - Quiz incorrect: gentle shake (3px, 300ms) + red flash + encouragement text
 - Progress ring update: stroke-dashoffset (800ms ease-out) + counter number animation
 - Respect `prefers-reduced-motion`
+
+### Audio Player Animations
+- Mini-player appear: slide up from bottom (300ms spring, stiffness 300, damping 30)
+- Mini-player dismiss: slide down (200ms ease-out)
+- Play button tap: scale 0.95 → 1.0 (100ms)
+- Play button active: subtle glow pulse (2s infinite, disabled with `prefers-reduced-motion`)
+- Seek bar thumb: grows on hover/drag (scale 1.2)
+- Speed button select: background transition (150ms ease)
+- Listen mode enter: sheet slides up from bottom (400ms spring)
+- Listen mode leave: slides down (250ms ease-out)
+- Section label change: crossfade text (200ms ease)
+- Audio progress: width transition (300ms linear — smooth tracking)
 
 ### Accessibility Spec
 - Color contrast: minimum 4.5:1 for body text, 3:1 for large text

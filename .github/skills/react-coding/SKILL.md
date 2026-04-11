@@ -269,3 +269,257 @@ The tailwind config should extend with these custom utilities:
 - Use IntersectionObserver for scroll animations (not scroll event listeners)
 - Optimize images: use `loading="lazy"`, provide width/height
 - Code-split quiz components (only load when navigating to quiz route)
+- Lazy-load audio components (only mount AudioMiniPlayer when user first plays audio)
+
+## Audio Player Patterns
+
+### useAudioPlayer Hook
+```jsx
+import { useState, useRef, useEffect, useCallback } from 'react';
+
+const AUDIO_STORAGE_KEY = 'syllabus-audio-state';
+
+function useAudioPlayer(audioManifest, syllabus) {
+  const audioRef = useRef(new Audio());
+  const [state, setState] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(AUDIO_STORAGE_KEY));
+      return {
+        isPlaying: false,
+        currentTime: saved?.lastPosition || 0,
+        duration: 0,
+        playbackRate: saved?.playbackRate || 1,
+        volume: saved?.volume ?? 0.8,
+        isMuted: saved?.isMuted || false,
+        currentLessonId: saved?.lastLessonId || null,
+        currentSection: null,
+        isLoading: false,
+        error: null,
+        provider: audioManifest?.provider || 'edge-tts',
+      };
+    } catch {
+      return {
+        isPlaying: false, currentTime: 0, duration: 0,
+        playbackRate: 1, volume: 0.8, isMuted: false,
+        currentLessonId: null, currentSection: null,
+        isLoading: false, error: null, provider: 'edge-tts',
+      };
+    }
+  });
+
+  // Persist state to localStorage (debounced)
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      localStorage.setItem(AUDIO_STORAGE_KEY, JSON.stringify({
+        lastLessonId: state.currentLessonId,
+        lastPosition: state.currentTime,
+        playbackRate: state.playbackRate,
+        volume: state.volume,
+        isMuted: state.isMuted,
+      }));
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [state.currentLessonId, state.currentTime, state.playbackRate, state.volume, state.isMuted]);
+
+  const play = useCallback((lessonId) => {
+    const lesson = audioManifest?.lessons?.find(l => l.lessonId === lessonId);
+    if (!lesson) {
+      // Fallback to Web Speech API
+      playWithWebSpeech(lessonId);
+      return;
+    }
+    const audio = audioRef.current;
+    if (state.currentLessonId !== lessonId) {
+      audio.src = lesson.audioFile;
+      audio.currentTime = 0;
+    }
+    audio.playbackRate = state.playbackRate;
+    audio.volume = state.isMuted ? 0 : state.volume;
+    audio.play().catch(err => setState(s => ({ ...s, error: err.message })));
+    setState(s => ({ ...s, isPlaying: true, currentLessonId: lessonId, isLoading: false }));
+  }, [audioManifest, state.currentLessonId, state.playbackRate, state.volume, state.isMuted]);
+
+  // ... (pause, toggle, seek, skipForward, skipBackward, setPlaybackRate, setVolume, toggleMute, nextLesson, prevLesson)
+  
+  return { ...state, play, pause, toggle, seek, skipForward, skipBackward, setPlaybackRate, setVolume, toggleMute, nextLesson, prevLesson, audioRef };
+}
+```
+
+### useMediaSession Hook
+```jsx
+function useMediaSession({ title, isPlaying, onPlay, onPause, onSeekBackward, onSeekForward, onPrevTrack, onNextTrack }) {
+  useEffect(() => {
+    if (!('mediaSession' in navigator)) return;
+
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: title || 'Syllabus Tutorial',
+      artist: 'Syllabus',
+      album: 'Interactive Tutorial',
+    });
+
+    navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+
+    const handlers = {
+      play: onPlay,
+      pause: onPause,
+      seekbackward: () => onSeekBackward(15),
+      seekforward: () => onSeekForward(15),
+      previoustrack: onPrevTrack,
+      nexttrack: onNextTrack,
+    };
+
+    for (const [action, handler] of Object.entries(handlers)) {
+      try { navigator.mediaSession.setActionHandler(action, handler); } catch {}
+    }
+
+    return () => {
+      for (const action of Object.keys(handlers)) {
+        try { navigator.mediaSession.setActionHandler(action, null); } catch {}
+      }
+    };
+  }, [title, isPlaying, onPlay, onPause, onSeekBackward, onSeekForward, onPrevTrack, onNextTrack]);
+}
+```
+
+### AudioMiniPlayer Component Pattern
+```jsx
+function AudioMiniPlayer({ audioState, onToggle, onSkipBack, onSkipForward, onExpand, onDismiss }) {
+  if (!audioState.currentLessonId) return null;
+
+  return (
+    <motion.div
+      initial={{ y: 100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 100, opacity: 0 }}
+      className="fixed bottom-0 left-0 right-0 z-40 border-t"
+      style={{
+        background: 'var(--glass-bg)',
+        backdropFilter: 'blur(var(--glass-blur))',
+        WebkitBackdropFilter: 'blur(var(--glass-blur))',
+        borderColor: 'var(--glass-border)',
+      }}
+    >
+      {/* Thin progress bar at top edge */}
+      <div className="h-1 w-full" style={{ background: 'var(--border)' }}>
+        <div className="h-full transition-all duration-300"
+          style={{
+            width: `${(audioState.currentTime / audioState.duration) * 100}%`,
+            background: 'var(--gradient-hero)',
+          }}
+        />
+      </div>
+
+      <div className="flex items-center justify-between px-4 py-3 max-w-screen-xl mx-auto">
+        {/* Lesson info */}
+        <div className="flex-1 min-w-0 mr-4">
+          <p className="text-sm font-medium truncate" style={{ color: 'var(--text)' }}>
+            {audioState.currentTitle}
+          </p>
+          <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>
+            {formatTime(audioState.currentTime)} / {formatTime(audioState.duration)}
+          </p>
+        </div>
+
+        {/* Controls */}
+        <div className="flex items-center gap-2">
+          <button onClick={onSkipBack} aria-label="Skip back 15 seconds"
+            className="p-2 rounded-full hover:bg-white/5 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
+            <SkipBack size={18} />
+          </button>
+          <button onClick={onToggle} aria-label={audioState.isPlaying ? 'Pause' : 'Play'}
+            className="p-3 rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+            style={{ background: 'var(--primary)', color: '#fff' }}>
+            {audioState.isPlaying ? <Pause size={20} /> : <Play size={20} />}
+          </button>
+          <button onClick={onSkipForward} aria-label="Skip forward 15 seconds"
+            className="p-2 rounded-full hover:bg-white/5 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
+            <SkipForward size={18} />
+          </button>
+        </div>
+
+        {/* Speed + expand */}
+        <div className="flex items-center gap-2 ml-4">
+          <button aria-label={`Playback speed: ${audioState.playbackRate}x`}
+            className="text-xs px-2 py-1 rounded min-w-[44px] min-h-[44px] flex items-center justify-center"
+            style={{ color: 'var(--accent)' }}>
+            {audioState.playbackRate}x
+          </button>
+          <button onClick={onExpand} aria-label="Expand player"
+            className="p-2 rounded-full hover:bg-white/5 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
+            <ChevronUp size={18} />
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+```
+
+### Web Speech API Fallback Pattern
+```jsx
+function useWebSpeechFallback() {
+  const utteranceRef = useRef(null);
+
+  const speak = useCallback((text, { rate = 1, onEnd } = {}) => {
+    if (!('speechSynthesis' in window)) return false;
+
+    window.speechSynthesis.cancel(); // Stop any current speech
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = rate;
+    utterance.onend = onEnd;
+    utteranceRef.current = utterance;
+
+    // Try to find a good voice
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = voices.find(v => v.name.includes('Samantha')) // macOS
+      || voices.find(v => v.name.includes('Google'))               // Chrome
+      || voices.find(v => v.lang.startsWith('en'));                // Any English
+    if (preferred) utterance.voice = preferred;
+
+    window.speechSynthesis.speak(utterance);
+    return true;
+  }, []);
+
+  const stop = useCallback(() => {
+    window.speechSynthesis.cancel();
+  }, []);
+
+  return { speak, stop, isSupported: 'speechSynthesis' in window };
+}
+```
+
+### Audio Keyboard Shortcuts (integrate with useKeyboardNav)
+```jsx
+useEffect(() => {
+  const handleKeyDown = (e) => {
+    // Don't intercept when user is typing in an input
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    
+    switch (e.key) {
+      case ' ':
+        if (!e.target.closest('[role="option"]')) { // Don't conflict with quiz
+          e.preventDefault();
+          toggle();
+        }
+        break;
+      case 'ArrowLeft':
+        if (e.target.closest('.audio-player')) {
+          e.preventDefault();
+          skipBackward(15);
+        }
+        break;
+      case 'ArrowRight':
+        if (e.target.closest('.audio-player')) {
+          e.preventDefault();
+          skipForward(15);
+        }
+        break;
+      case '[': setPlaybackRate(Math.max(0.75, playbackRate - 0.25)); break;
+      case ']': setPlaybackRate(Math.min(2, playbackRate + 0.25)); break;
+      case 'm': case 'M': toggleMute(); break;
+    }
+  };
+  window.addEventListener('keydown', handleKeyDown);
+  return () => window.removeEventListener('keydown', handleKeyDown);
+}, [toggle, skipBackward, skipForward, setPlaybackRate, toggleMute, playbackRate]);
+```

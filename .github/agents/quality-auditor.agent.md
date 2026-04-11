@@ -55,6 +55,8 @@ Before doing anything, read `.github/skills/audit-automation/SKILL.md` for the c
 - `role="progressbar"` on all progress indicators
 - `lang` attribute on `<html>`
 - Glass overlays maintain text contrast
+- Audio player has ARIA labels on all controls
+- Audio progress bar has `role="slider"` with `aria-valuemin`, `aria-valuemax`, `aria-valuenow`
 
 ### 4. Routes & Navigation
 - All defined routes render without error
@@ -69,13 +71,28 @@ Before doing anything, read `.github/skills/audit-automation/SKILL.md` for the c
 - Code blocks have horizontal scroll
 - Touch targets ≥ 44px
 - Body text ≥ 16px at all widths
+- Audio mini-player is full-width on mobile with adequate touch targets
+- Content area has bottom padding when audio player is visible
 
 ### 6. Performance
 - Route-level code splitting (React.lazy)
 - Images use `loading="lazy"`
 - localStorage writes are debounced
 - Animations respect `prefers-reduced-motion`
-- Bundle < 500KB (gzipped)
+- Bundle < 500KB (gzipped, excluding audio files)
+- Audio components lazy-loaded
+
+### 7. Audio Quality
+- `audio-manifest.json` exists and is valid JSON
+- If provider is `edge-tts`: every lesson has a matching MP3 in `public/audio/`
+- If provider is `web-speech`: every lesson has a script array in the manifest
+- No empty or zero-byte audio files
+- Audio player component exists and imports correctly
+- `useAudioPlayer` hook handles missing audio gracefully (shows fallback state)
+- `useMediaSession` hook is connected for lock screen controls
+- Audio keyboard shortcuts don't conflict with quiz keyboard interactions
+- VTT subtitle files exist for each MP3 (accessibility requirement)
+- Audio player doesn't auto-play (requires user interaction — browser policy)
 
 ## Self-Healing Process
 
@@ -94,15 +111,16 @@ Print a score card:
 
   ✅ Build Integrity:   4/4 checks passed
   ✅ Content:           12/12 checks passed
-  ⚠️ Accessibility:    11/12 (1 auto-fixed)
+  ⚠️ Accessibility:    13/14 (1 auto-fixed)
   ✅ Routes:            5/5 checks passed
-  ✅ Responsive:        6/6 checks passed
+  ✅ Responsive:        7/7 checks passed
   ✅ Performance:       8/8 checks passed
+  ✅ Audio:             10/10 checks passed
 
   Score: 98/100 — 1 issue auto-fixed
   
   Fixed:
-  • Added aria-label to sidebar toggle button (Accessibility)
+  • Added aria-label to audio seek bar (Accessibility)
 ```
 
 After the audit passes, rebuild to verify:

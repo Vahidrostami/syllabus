@@ -18,6 +18,18 @@ const DEFAULT_CONFIG = {
     includeDiagrams: true,
     progressTracking: true,
   },
+  audio: {
+    enabled: true,
+    provider: 'edge-tts',
+    voice: 'en-US-AriaNeural',
+    speed: 1.0,
+    fallback: 'web-speech',
+  },
+  deploy: {
+    enabled: true,
+    provider: 'auto',
+    autoPrompt: true,
+  },
   agents: {
     model: 'claude-sonnet-4-20250514',
     maxRetries: 3,

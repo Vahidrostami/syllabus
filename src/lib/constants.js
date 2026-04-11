@@ -43,7 +43,7 @@ export const AGENT_STEPS = [
     agent: 'UI Designer',
     icon: '🎨',
     action: 'Crafting the visual experience...',
-    result: 'Dark theme, glassmorphism, gradient headings, scroll reveals',
+    result: 'Dark theme, glassmorphism, gradient headings, audio player',
     duration: 500
   },
   {
@@ -51,16 +51,32 @@ export const AGENT_STEPS = [
     agent: 'React Developer',
     icon: '⚛️',
     action: 'Building the interactive app...',
-    result: '18 components, glass UI, scroll animations, celebrations',
+    result: '22 components, glass UI, scroll animations, audio player',
     duration: 1000
   },
   {
     num: 7,
+    agent: 'Narration Engineer',
+    icon: '🎙️',
+    action: 'Generating audio narration for all lessons...',
+    result: '24 audio files, ~40 min total, VTT subtitles',
+    duration: 900
+  },
+  {
+    num: 8,
     agent: 'Quality Auditor',
     icon: '🔍',
     action: 'Auditing accessibility, performance & quality...',
     result: 'Score: 98/100 — 2 issues auto-fixed',
     duration: 600
+  },
+  {
+    num: 9,
+    agent: 'Deployer',
+    icon: '🚀',
+    action: 'Deploying to free hosting...',
+    result: 'Live at https://learn-topic.vercel.app',
+    duration: 400
   }
 ];
 

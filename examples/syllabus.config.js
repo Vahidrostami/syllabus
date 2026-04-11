@@ -23,6 +23,22 @@ export default {
     progressTracking: true,       // localStorage-based progress
   },
 
+  // Audio narration — listen to lessons while reading or on the go
+  audio: {
+    enabled: true,                // Generate audio for all lessons
+    provider: 'edge-tts',         // edge-tts (free, neural voices) | web-speech (browser-only) | none
+    voice: 'en-US-AriaNeural',    // Microsoft neural voice (see edge-tts --list-voices)
+    speed: 1.0,                   // Default playback speed (user can change in player)
+    fallback: 'web-speech',       // Fallback if edge-tts unavailable
+  },
+
+  // Deployment — auto-deploy to free hosting after build
+  deploy: {
+    enabled: true,                // Deploy after quality audit passes
+    provider: 'auto',             // auto | vercel | netlify | surge | github-pages | cloudflare
+    autoPrompt: true,             // Ask user before deploying (set false to deploy silently)
+  },
+
   // Agent configuration — how the AI pipeline runs
   agents: {
     model: 'claude-sonnet-4-20250514', // Model for agent execution

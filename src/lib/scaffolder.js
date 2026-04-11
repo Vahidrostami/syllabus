@@ -41,8 +41,10 @@ export async function scaffoldProject(brief) {
   const srcDirs = [
     'src', 'src/components', 'src/components/layout', 'src/components/lesson',
     'src/components/quiz', 'src/components/progress', 'src/components/ui',
+    'src/components/audio',
     'src/hooks', 'src/data', 'src/data/lessons', 'src/data/quizzes',
-    'src/lib', 'src/pages'
+    'src/lib', 'src/pages',
+    'public/audio'
   ];
   for (const dir of srcDirs) {
     await fs.ensureDir(path.join(outputDir, dir));

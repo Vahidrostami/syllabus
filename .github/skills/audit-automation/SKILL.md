@@ -214,6 +214,69 @@ class ErrorBoundary extends React.Component {
 // Hardcoded URL → replace with relative path
 ```
 
+## 7. Audio Audit
+
+### Checks
+- **Manifest exists**: `src/data/audio-manifest.json` is valid JSON
+- **File coverage**: Every lesson in syllabus has a corresponding audio entry in manifest
+- **File integrity**: If `provider: "edge-tts"`, all referenced MP3 files exist in `public/audio/` and are > 1KB
+- **Subtitle files**: VTT files exist alongside MP3s for accessibility
+- **Component exists**: `AudioMiniPlayer.jsx` and `AudioPlayer.jsx` exist and import correctly
+- **Hook exists**: `useAudioPlayer.js` exists with required exports
+- **Graceful fallback**: Player handles missing audio files without crashing
+- **No autoplay**: Audio doesn't play without user interaction (browser policy compliance)
+- **Keyboard safety**: Audio shortcuts (Space, arrows) don't fire when user is in quiz input or text field
+- **Mobile**: `useMediaSession.js` sets up lock screen controls
+
+### Auto-Fix Patterns
+```jsx
+// Missing aria-label on audio controls
+// Before:
+<button onClick={onToggle}><Play size={20} /></button>
+// Fix:
+<button onClick={onToggle} aria-label={isPlaying ? 'Pause' : 'Play'}><Play size={20} /></button>
+
+// Missing role on seek bar
+// Before:
+<input type="range" value={currentTime} onChange={handleSeek} />
+// Fix:
+<input type="range" value={currentTime} onChange={handleSeek}
+  role="slider" aria-label="Audio seek bar"
+  aria-valuemin={0} aria-valuemax={duration} aria-valuenow={currentTime} />
+
+// Keyboard shortcut conflict with quiz
+// Before:
+case ' ': e.preventDefault(); toggle(); break;
+// Fix:
+case ' ':
+  if (!e.target.closest('[role="option"]') && e.target.tagName !== 'BUTTON') {
+    e.preventDefault(); toggle();
+  }
+  break;
+
+// Missing bottom padding when player active
+// Before:
+<main className="flex-1">
+// Fix:
+<main className={`flex-1 ${audioActive ? 'pb-20' : ''}`}>
+
+// Missing graceful fallback for no audio
+// Before:
+const audioSrc = manifest.lessons.find(l => l.lessonId === id).audioFile;
+// Fix:
+const lesson = manifest?.lessons?.find(l => l.lessonId === id);
+const audioSrc = lesson?.audioFile || null;
+if (!audioSrc && manifest?.provider !== 'web-speech') {
+  // Show "Audio not available" state
+}
+```
+
+### Verification
+- Parse `audio-manifest.json` and cross-reference against lesson files
+- Check all audio component files for ARIA attributes
+- Verify keyboard handler checks `e.target` before intercepting
+- Confirm `useMediaSession` is called in the audio provider/context
+
 ## Audit Execution Strategy
 
 ### Self-Healing Loop

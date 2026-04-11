@@ -77,7 +77,9 @@ program
       console.log(chalk.gray('  │   ├── quiz-master.agent.md'));
       console.log(chalk.gray('  │   ├── ui-designer.agent.md'));
       console.log(chalk.gray('  │   ├── react-developer.agent.md'));
-      console.log(chalk.gray('  │   └── quality-auditor.agent.md'));
+      console.log(chalk.hex('#22d3ee')('  │   ├── narration-engineer.agent.md ← Audio narration'));
+      console.log(chalk.gray('  │   ├── quality-auditor.agent.md'));
+      console.log(chalk.hex('#22d3ee')('  │   └── deployer.agent.md           ← Auto-deployment'));
       console.log(chalk.gray('  └── skills/'));
       console.log(chalk.gray('      ├── web-research/SKILL.md'));
       console.log(chalk.gray('      ├── syllabus-design/SKILL.md'));
@@ -87,7 +89,9 @@ program
       console.log(chalk.gray('      ├── design-system/SKILL.md'));
       console.log(chalk.gray('      ├── progress-tracking/SKILL.md'));
       console.log(chalk.gray('      ├── accessibility/SKILL.md'));
-      console.log(chalk.gray('      └── audit-automation/SKILL.md'));
+      console.log(chalk.gray('      ├── audit-automation/SKILL.md'));
+      console.log(chalk.hex('#22d3ee')('      ├── audio-narration/SKILL.md     ← TTS & audio player'));
+      console.log(chalk.hex('#22d3ee')('      └── deployment/SKILL.md          ← Free hosting'));
       console.log(chalk.gray('  CLAUDE.md                          ← Claude Code reads this'));
 
       console.log();

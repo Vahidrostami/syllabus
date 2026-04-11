@@ -222,3 +222,95 @@ glow: var(--glow-primary) — per-theme
 - Content: `Code`, `BookOpen`, `Puzzle`, `Trophy`, `Clock`
 - Actions: `Copy`, `Play`, `RotateCcw`, `ChevronDown`
 - Progress: `Flame`, `Target`, `Award`, `Sparkles`
+- Audio: `Headphones`, `Play`, `Pause`, `SkipBack`, `SkipForward`, `Volume2`, `VolumeX`, `ChevronUp`, `ChevronDown`
+
+## Audio Player Design Specs
+
+### AudioMiniPlayer (Floating Bottom Bar)
+- **Position**: Fixed bottom, full width, z-40
+- **Height**: 64px (compact)
+- **Style**: Glass-morphism matching the active theme
+- **Background**: `var(--glass-bg)` with `backdrop-filter: blur(var(--glass-blur))`
+- **Border**: 1px top border using `var(--glass-border)`
+- **Progress bar**: 2px thin bar at very top edge, gradient fill (`var(--gradient-hero)`)
+- **Layout**: 3 zones — left (lesson info), center (controls), right (speed + expand)
+- **Animation**: Slides up from bottom (Framer Motion `y: 100 → 0`)
+- **Collapse**: When no audio active, fully hidden (not just minimized)
+- **Mobile**: Full width, slightly taller (72px) for touch targets
+
+```css
+.audio-mini-player {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 40;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-top: 1px solid var(--glass-border);
+}
+```
+
+### AudioPlayer (Expanded View)
+- **Style**: Glass card, centered, max-width 500px
+- **Appears**: Slides up from mini-player position (sheet/modal style)
+- **Backdrop**: Semi-transparent overlay (click to dismiss)
+- **Controls**: Large seek bar, play/pause (56px button), ±15s skip, volume slider, speed selector
+- **Section indicator**: Shows current section name with subtle highlight
+- **Seek bar**: Gradient fill matching `--gradient-hero`, 8px height, rounded-full
+- **Speed selector**: Pill buttons (0.75x, 1x, 1.25x, 1.5x, 2x), active = primary color
+- **Volume**: Smaller slider, with mute toggle icon
+
+### ListenMode (Full-Screen Mobile)
+- **Background**: Solid `var(--bg)` with mesh gradient (not glass — too blurry on full screen)
+- **Center**: Large album-art style card with gradient background + lesson icon
+- **Play button**: 80px circular button, gradient background, play/pause icon
+- **Layout**: Vertical stack — lesson title, module name, progress bar, controls, key takeaways
+- **Key takeaways**: Displayed as readable text below controls (useful while walking)
+- **Swipe**: Left/right for prev/next lesson (Framer Motion drag gesture)
+- **Transition**: Slides up from mini-player (full height sheet)
+
+### Audio Toggle in TopBar
+- **Icon**: `Headphones` icon (lucide-react)
+- **Placement**: Right side of TopBar, next to settings/theme toggle
+- **States**: Default (inactive), Active (playing — icon pulses gently)
+- **Click**: If no audio playing → start current lesson audio. If playing → show/hide mini-player
+- **Badge**: Small dot indicator when audio is available but not playing
+
+### Theme Integration
+The audio player inherits ALL theme variables — no hardcoded colors. In each theme:
+
+| Theme | Player Accent |
+|---|---|
+| Midnight Scholar | Indigo play button with cyan progress bar |
+| Paper & Ink | Blue play button with teal progress bar |
+| Terminal Green | Green play button with lime progress bar |
+| Notebook | Purple play button with amber progress bar |
+
+### Micro-Interactions (Audio)
+
+| Element | Trigger | Animation |
+|---|---|---|
+| Mini-player | Audio starts | Slide up from bottom, 300ms spring |
+| Mini-player | Dismiss | Slide down, 200ms ease-out |
+| Play button | Tap | Scale 0.95 → 1.0, 100ms |
+| Play button | Playing | Subtle pulse glow (2s infinite, reduced-motion: none) |
+| Progress bar | Seek | Thumb grows on hover/drag |
+| Speed button | Select | Background transition 150ms |
+| Listen mode | Enter | Sheet slides up from bottom, 400ms spring |
+| Listen mode | Leave | Slides down, 250ms ease-out |
+| Section label | Change | Crossfade text, 200ms |
+
+### Content Area Padding Adjustment
+When the audio mini-player is visible, the main content area needs bottom padding to avoid the player overlapping content:
+
+```css
+.content-area--audio-active {
+  padding-bottom: 80px; /* 64px player + 16px breathing room */
+}
+
+@media (max-width: 767px) {
+  .content-area--audio-active {
+    padding-bottom: 88px; /* 72px player + 16px */
+  }
+}
+```

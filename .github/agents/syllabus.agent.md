@@ -2,10 +2,10 @@
 name: Syllabus
 description: >
   Build polished interactive React tutorials from any topic. Orchestrates a
-  6-phase pipeline: research, review, write, quiz, design, build. Just say
-  "I want to learn [topic]" or "Teach me [topic]".
+  9-phase pipeline: research, review, write, quiz, design, build, narrate,
+  audit, deploy. Just say "I want to learn [topic]" or "Teach me [topic]".
 tools: ['agent', 'search', 'read', 'edit', 'web']
-agents: ['curriculum-architect', 'content-reviewer', 'lesson-writer', 'quiz-master', 'ui-designer', 'react-developer', 'quality-auditor']
+agents: ['curriculum-architect', 'content-reviewer', 'lesson-writer', 'quiz-master', 'ui-designer', 'react-developer', 'narration-engineer', 'quality-auditor', 'deployer']
 handoffs: []
 ---
 
@@ -28,8 +28,10 @@ On every invocation, check the `syllabus-output/` directory to determine the cur
 | `src/data/quizzes/` populated | **DESIGN** | → @ui-designer |
 | `src/lib/theme.js` exists | **BUILD** | → @react-developer |
 | All components exist | **VERIFY** | Run `npm install && npm run build` |
-| Build passes | **AUDIT** | → @quality-auditor |
-| Audit passes | **DONE** | Tell user: `cd syllabus-output && npm run dev` |
+| Build passes | **NARRATE** | → @narration-engineer |
+| Audio generated / manifest exists | **AUDIT** | → @quality-auditor |
+| Audit passes | **DEPLOY** | → @deployer |
+| Deploy passes (or skipped) | **DONE** | Tell user: `cd syllabus-output && npm run dev` + show live URL |
 
 ### The BRIEF Phase (You Do This Yourself)
 
@@ -62,24 +64,24 @@ Then create `syllabus-output/` and hand off to @curriculum-architect.
 For each phase, hand off to the appropriate specialist subagent. Each subagent reads its own skills, does its work, and writes files to `syllabus-output/`.
 
 **Step 1 → @curriculum-architect**: Research topic, build `syllabus.json`
-Print: `🔍 [1/7] Curriculum Architect — Syllabus ready: N modules, N lessons`
+Print: `🔍 [1/9] Curriculum Architect — Syllabus ready: N modules, N lessons`
 
 **Step 2 → @content-reviewer**: Review syllabus against user's goals, adjust
-Print: `🎯 [2/7] Content Reviewer — Adjusted: [changes summary]`
+Print: `🎯 [2/9] Content Reviewer — Adjusted: [changes summary]`
 
 **Step 3 → @lesson-writer**: Write lesson content for each module
-Print: `✍️  [3/7] Lesson Writer — N lessons written`
+Print: `✍️  [3/9] Lesson Writer — N lessons written`
 
 **Step 4 → @quiz-master**: Create quizzes for each module
-Print: `🧩 [4/7] Quiz Master — N questions, N coding challenges`
+Print: `🧩 [4/9] Quiz Master — N questions, N coding challenges`
 
-**Step 5 → @ui-designer**: Choose theme, design layout
-Print: `🎨 [5/7] UI Designer — [theme name] theme, responsive layout`
+**Step 5 → @ui-designer**: Choose theme, design layout (including audio player styling)
+Print: `🎨 [5/9] UI Designer — [theme name] theme, responsive layout, audio player`
 
-**Step 6 → @react-developer**: Build the full React app
-Print: `⚛️  [6/7] React Developer — N components built`
+**Step 6 → @react-developer**: Build the full React app (including audio player components)
+Print: `⚛️  [6/9] React Developer — N components built (including audio player)`
 
-### Verify & Audit
+### Verify & Narrate
 
 ```bash
 cd syllabus-output
@@ -91,15 +93,34 @@ If the build fails, read the error, fix it, rebuild. Don't report the error — 
 
 Once the build passes:
 
-**Step 7 → @quality-auditor**: Audit accessibility, performance, content, routes, responsive, build
-Print: `🔍 [7/7] Quality Auditor — Score: N/100, fixed N issues`
+**Step 7 → @narration-engineer**: Generate audio narration for all lessons
+Print: `🎙️ [7/9] Narration Engineer — N audio files, ~N min total`
 
-The auditor reads `.github/skills/audit-automation/SKILL.md`, runs 6 audit categories, auto-fixes issues, and re-verifies. It produces a scorecard.
+The narration engineer reads `.github/skills/audio-narration/SKILL.md`, converts lesson content to spoken scripts, generates MP3s via Edge TTS, creates VTT subtitles, and builds the audio manifest. If Edge TTS is unavailable, falls back to Web Speech API scripts.
 
-After the audit passes:
+After narration, rebuild to include audio files:
+```bash
+cd syllabus-output && npm run build
+```
+
+**Step 8 → @quality-auditor**: Audit accessibility, performance, content, routes, responsive, build, and audio
+Print: `🔍 [8/9] Quality Auditor — Score: N/100, fixed N issues`
+
+The auditor reads `.github/skills/audit-automation/SKILL.md`, runs all audit categories (including audio checks), auto-fixes issues, and re-verifies. It produces a scorecard.
+
+**Step 9 → @deployer**: Deploy to a free hosting service
+Print: `🚀 [9/9] Deployer — Live at https://learn-topic.vercel.app`
+
+The deployer reads `.github/skills/deployment/SKILL.md`, auto-selects the best available provider (Vercel → Netlify → Surge), handles auth, deploys `dist/`, and reports the live URL with a QR code.
+
+If the user declines deployment or all providers fail, skip gracefully.
+
+After the pipeline completes:
 ```
 ✅ Tutorial ready! (Quality score: N/100)
-   cd syllabus-output && npm run dev
+   🖥️  Local:  cd syllabus-output && npm run dev
+   🌐 Live:   https://learn-topic-name.vercel.app
+   🎧 Audio:  N lessons narrated (~N min)
 ```
 
 ## Key Principles
