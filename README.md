@@ -17,7 +17,7 @@
 
 ```
 You (in Copilot, switch to @Syllabus agent):
-  "I want to learn fine-tuning SLMs to prepare for job interviews"
+  "I want to learn fine-tuning SLMs"
 
 @Syllabus detects the phase, asks a clarifying question if needed, then:
   🔍 Curriculum Architect — web searches the topic, builds a syllabus
@@ -48,7 +48,7 @@ cd my-project
 syllabus init
 
 # Now switch to @Syllabus in Copilot Agent Mode and type:
-"I want to learn fine-tuning SLMs to prepare for job interviews"
+"I want to learn fine-tuning SLMs"
 
 # @Syllabus orchestrates everything. When it's done:
 cd syllabus-output && npm run dev
@@ -144,13 +144,11 @@ Skills are reusable reference directories that agents load on demand:
 Once you've run `syllabus init`, switch to `@Syllabus` and try:
 
 ```
-I want to learn fine-tuning SLMs to prepare for job interviews
+I want to learn fine-tuning SLMs
 
 Teach me Kubernetes from scratch, I'm a backend dev
 
 Build a hands-on tutorial on React hooks with coding exercises
-
-I need to understand system design for FAANG interviews  
 
 Create a project-based course on building a CLI in Rust
 
@@ -158,7 +156,6 @@ Help me learn GraphQL — I know REST but not GraphQL
 ```
 
 The AI infers depth, style, and goals from how you phrase it:
-- "prepare for interviews" → interview-prep style
 - "from scratch" → beginner depth  
 - "hands-on" → hands-on style with code exercises
 - "project-based" → capstone project included
