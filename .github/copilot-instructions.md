@@ -13,12 +13,13 @@ Trigger when the user says anything like:
 
 Switch to the **@Syllabus** agent. It handles everything:
 1. Asks brief clarifying questions if needed
-2. Delegates to specialist subagents (curriculum-architect, content-reviewer, lesson-writer, quiz-master, ui-designer, react-developer)
+2. Delegates to specialist subagents (curriculum-architect, content-reviewer, lesson-writer, quiz-master, ui-designer, react-developer, quality-auditor)
 3. Each subagent reads its own skills from `.github/skills/`
 4. Output goes to `syllabus-output/`
 5. Verifies the build works
+6. Audits for accessibility, performance, and quality — auto-fixes issues
 
-The user only interacts with @Syllabus. The 6 specialist agents are invisible subagents.
+The user only interacts with @Syllabus. The 7 specialist agents are invisible subagents.
 
 ## Important
 

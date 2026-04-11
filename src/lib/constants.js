@@ -43,7 +43,7 @@ export const AGENT_STEPS = [
     agent: 'UI Designer',
     icon: '🎨',
     action: 'Crafting the visual experience...',
-    result: 'Dark theme, responsive layout, progress dashboard',
+    result: 'Dark theme, glassmorphism, gradient headings, scroll reveals',
     duration: 500
   },
   {
@@ -51,8 +51,16 @@ export const AGENT_STEPS = [
     agent: 'React Developer',
     icon: '⚛️',
     action: 'Building the interactive app...',
-    result: '14 components, routing, state management, animations',
+    result: '18 components, glass UI, scroll animations, celebrations',
     duration: 1000
+  },
+  {
+    num: 7,
+    agent: 'Quality Auditor',
+    icon: '🔍',
+    action: 'Auditing accessibility, performance & quality...',
+    result: 'Score: 98/100 — 2 issues auto-fixed',
+    duration: 600
   }
 ];
 

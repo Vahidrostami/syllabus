@@ -5,7 +5,7 @@ description: >
   6-phase pipeline: research, review, write, quiz, design, build. Just say
   "I want to learn [topic]" or "Teach me [topic]".
 tools: ['agent', 'search', 'read', 'edit', 'web']
-agents: ['curriculum-architect', 'content-reviewer', 'lesson-writer', 'quiz-master', 'ui-designer', 'react-developer']
+agents: ['curriculum-architect', 'content-reviewer', 'lesson-writer', 'quiz-master', 'ui-designer', 'react-developer', 'quality-auditor']
 handoffs: []
 ---
 
@@ -28,7 +28,8 @@ On every invocation, check the `syllabus-output/` directory to determine the cur
 | `src/data/quizzes/` populated | **DESIGN** | → @ui-designer |
 | `src/lib/theme.js` exists | **BUILD** | → @react-developer |
 | All components exist | **VERIFY** | Run `npm install && npm run build` |
-| Build passes | **DONE** | Tell user: `cd syllabus-output && npm run dev` |
+| Build passes | **AUDIT** | → @quality-auditor |
+| Audit passes | **DONE** | Tell user: `cd syllabus-output && npm run dev` |
 
 ### The BRIEF Phase (You Do This Yourself)
 
@@ -61,24 +62,24 @@ Then create `syllabus-output/` and hand off to @curriculum-architect.
 For each phase, hand off to the appropriate specialist subagent. Each subagent reads its own skills, does its work, and writes files to `syllabus-output/`.
 
 **Step 1 → @curriculum-architect**: Research topic, build `syllabus.json`
-Print: `🔍 [1/6] Curriculum Architect — Syllabus ready: N modules, N lessons`
+Print: `🔍 [1/7] Curriculum Architect — Syllabus ready: N modules, N lessons`
 
 **Step 2 → @content-reviewer**: Review syllabus against user's goals, adjust
-Print: `🎯 [2/6] Content Reviewer — Adjusted: [changes summary]`
+Print: `🎯 [2/7] Content Reviewer — Adjusted: [changes summary]`
 
 **Step 3 → @lesson-writer**: Write lesson content for each module
-Print: `✍️  [3/6] Lesson Writer — N lessons written`
+Print: `✍️  [3/7] Lesson Writer — N lessons written`
 
 **Step 4 → @quiz-master**: Create quizzes for each module
-Print: `🧩 [4/6] Quiz Master — N questions, N coding challenges`
+Print: `🧩 [4/7] Quiz Master — N questions, N coding challenges`
 
 **Step 5 → @ui-designer**: Choose theme, design layout
-Print: `🎨 [5/6] UI Designer — [theme name] theme, responsive layout`
+Print: `🎨 [5/7] UI Designer — [theme name] theme, responsive layout`
 
 **Step 6 → @react-developer**: Build the full React app
-Print: `⚛️  [6/6] React Developer — N components built`
+Print: `⚛️  [6/7] React Developer — N components built`
 
-### Verify & Launch
+### Verify & Audit
 
 ```bash
 cd syllabus-output
@@ -86,13 +87,20 @@ npm install
 npm run build
 ```
 
-If the build succeeds:
+If the build fails, read the error, fix it, rebuild. Don't report the error — solve it.
+
+Once the build passes:
+
+**Step 7 → @quality-auditor**: Audit accessibility, performance, content, routes, responsive, build
+Print: `🔍 [7/7] Quality Auditor — Score: N/100, fixed N issues`
+
+The auditor reads `.github/skills/audit-automation/SKILL.md`, runs 6 audit categories, auto-fixes issues, and re-verifies. It produces a scorecard.
+
+After the audit passes:
 ```
-✅ Tutorial ready!
+✅ Tutorial ready! (Quality score: N/100)
    cd syllabus-output && npm run dev
 ```
-
-If the build fails, read the error, fix it, rebuild. Don't report the error — solve it.
 
 ## Key Principles
 

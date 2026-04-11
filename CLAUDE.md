@@ -30,9 +30,10 @@ Read syllabus.agent.md → it tells you to:
 3. Read content-reviewer.agent.md → review & adjust the syllabus
 4. Read lesson-writer.agent.md → write lesson content JSON files
 5. Read quiz-master.agent.md → create quiz JSON files  
-6. Read ui-designer.agent.md → pick theme, define layout
-7. Read react-developer.agent.md → write all React components
+6. Read ui-designer.agent.md → pick theme, define layout, glassmorphism & gradients
+7. Read react-developer.agent.md → write all React components with visual effects
 8. Run npm install && npm run build → verify it works
+9. Read quality-auditor.agent.md → audit accessibility, performance, content, fix issues
 ```
 
 Each step produces files in `syllabus-output/`. The orchestrator can resume from any phase by checking which files already exist.
