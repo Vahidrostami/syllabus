@@ -51,3 +51,20 @@ description: "Ensure WCAG 2.1 AA compliance for all generated tutorials. Covers 
 - Quiz question and all options readable
 - Progress percentage announced
 - Code block content accessible (with language announced)
+- Audio player controls labeled (play, pause, skip, seek, speed, volume)
+- Audio playback state announced via `aria-live` when toggled
+- Seek bar has `role="slider"` with `aria-valuemin`, `aria-valuemax`, `aria-valuenow`, `aria-label`
+- VTT subtitles available as `<track>` element on audio for screen readers
+- Listen mode has descriptive heading structure
+
+## Audio Player Accessibility
+- [ ] All audio controls have `aria-label` attributes
+- [ ] Play/pause button label changes based on state ("Play lesson" / "Pause lesson")
+- [ ] Seek bar uses `role="slider"` with proper ARIA value attributes
+- [ ] Speed selector buttons indicate current speed (`aria-pressed` or `aria-current`)
+- [ ] Volume slider has `aria-label="Volume"` 
+- [ ] Mini-player is in the tab order but doesn't trap focus
+- [ ] Keyboard shortcuts documented and don't conflict with screen reader shortcuts
+- [ ] Audio doesn't auto-play (requires explicit user action)
+- [ ] VTT subtitle track loaded for each audio file
+- [ ] Listen mode is a proper dialog/sheet with focus management

@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <strong>Turn any topic into an interactive tutorial — powered by a single orchestrator agent with 6 specialist subagents.</strong>
+  <strong>Turn any topic into an interactive tutorial — powered by a single orchestrator agent with 9 specialist subagents.</strong>
 </p>
 
 <p align="center">
@@ -17,21 +17,25 @@
 
 ```
 You (in Copilot, switch to @Syllabus agent):
-  "I want to learn fine-tuning SLMs to prepare for job interviews"
+  "I want to learn fine-tuning SLMs"
 
 @Syllabus detects the phase, asks a clarifying question if needed, then:
   🔍 Curriculum Architect — web searches the topic, builds a syllabus
   🎯 Content Reviewer    — adjusts for your goals & level
   ✍️  Lesson Writer       — writes explanations, code examples, diagrams
   🧩 Quiz Master         — creates MCQs, coding challenges, scenarios
-  🎨 UI Designer         — picks theme, designs the layout
-  ⚛️  React Developer     — builds the full React app
+  🎨 UI Designer         — picks theme, designs the layout & audio player
+  ⚛️  React Developer     — builds the full React app with audio player
+  🎙️ Narration Engineer  — generates audio MP3s for every lesson
+  🔍 Quality Auditor     — audits & auto-fixes issues
+  🚀 Deployer            — deploys live to Vercel/Netlify/Surge
 
 Output: syllabus-output/ — a working Vite + React app with
-        lessons, code playgrounds, quizzes, and progress tracking
+        lessons, code playgrounds, quizzes, audio narration,
+        progress tracking, and a live deployed URL
 ```
 
-**The key insight:** The user only talks to `@Syllabus`. The 6 specialist agents are invisible subagents that the orchestrator delegates to. There's no orchestration code — the `.agent.md` files ARE the software.
+**The key insight:** The user only talks to `@Syllabus`. The 9 specialist agents are invisible subagents that the orchestrator delegates to. There's no orchestration code — the `.agent.md` files ARE the software.
 
 ## Quick Start
 
@@ -44,7 +48,7 @@ cd my-project
 syllabus init
 
 # Now switch to @Syllabus in Copilot Agent Mode and type:
-"I want to learn fine-tuning SLMs to prepare for job interviews"
+"I want to learn fine-tuning SLMs"
 
 # @Syllabus orchestrates everything. When it's done:
 cd syllabus-output && npm run dev
@@ -68,7 +72,10 @@ Copies these files into your project:
 │   ├── lesson-writer.agent.md           ← Subagent: writes content
 │   ├── quiz-master.agent.md             ← Subagent: creates assessments
 │   ├── ui-designer.agent.md             ← Subagent: designs theme & layout
-│   └── react-developer.agent.md         ← Subagent: builds the React app
+│   ├── react-developer.agent.md         ← Subagent: builds the React app
+│   ├── narration-engineer.agent.md      ← Subagent: generates audio narration
+│   ├── quality-auditor.agent.md         ← Subagent: audits & fixes issues
+│   └── deployer.agent.md                ← Subagent: deploys to free hosting
 └── skills/
     ├── web-research/SKILL.md            ← How to research topics
     ├── syllabus-design/SKILL.md         ← Bloom's taxonomy, module arcs
@@ -77,7 +84,10 @@ Copies these files into your project:
     ├── react-coding/SKILL.md            ← Vite + React + Tailwind patterns
     ├── design-system/SKILL.md           ← Themes, components, spacing
     ├── progress-tracking/SKILL.md       ← Progress data model & UX
-    └── accessibility/SKILL.md           ← WCAG 2.1 AA checklist
+    ├── accessibility/SKILL.md           ← WCAG 2.1 AA checklist
+    ├── audit-automation/SKILL.md        ← Auto-fix patterns for auditing
+    ├── audio-narration/SKILL.md         ← TTS, audio player, Web Speech
+    └── deployment/SKILL.md              ← Free hosting providers
 CLAUDE.md                                ← Claude Code reads this
 ```
 
@@ -87,7 +97,7 @@ That's the entire system. No runtime dependencies. No server. No API keys.
 
 ### Single Orchestrator, Invisible Specialists
 
-The user only interacts with `@Syllabus`. The 6 specialist agents have `user-invocable: false` in their frontmatter — they're hidden from the agent picker and only accessible as subagents.
+The user only interacts with `@Syllabus`. The 9 specialist agents have `user-invocable: false` in their frontmatter — they're hidden from the agent picker and only accessible as subagents.
 
 ```
 User → @Syllabus (the only visible agent)
@@ -100,9 +110,11 @@ User → @Syllabus (the only visible agent)
          ├──→ @lesson-writer        (hidden subagent)
          ├──→ @quiz-master          (hidden subagent)
          ├──→ @ui-designer          (hidden subagent)
-         └──→ @react-developer      (hidden subagent)
-                  │
-                  └── npm install && npm run build → verify
+         ├──→ @react-developer      (hidden subagent)
+         ├──  npm install && npm run build → verify
+         ├──→ @narration-engineer   (hidden subagent) → audio MP3s
+         ├──→ @quality-auditor      (hidden subagent) → audit & fix
+         └──→ @deployer             (hidden subagent) → live URL
 ```
 
 ### File-Based State Machine
@@ -132,13 +144,11 @@ Skills are reusable reference directories that agents load on demand:
 Once you've run `syllabus init`, switch to `@Syllabus` and try:
 
 ```
-I want to learn fine-tuning SLMs to prepare for job interviews
+I want to learn fine-tuning SLMs
 
 Teach me Kubernetes from scratch, I'm a backend dev
 
 Build a hands-on tutorial on React hooks with coding exercises
-
-I need to understand system design for FAANG interviews  
 
 Create a project-based course on building a CLI in Rust
 
@@ -146,7 +156,6 @@ Help me learn GraphQL — I know REST but not GraphQL
 ```
 
 The AI infers depth, style, and goals from how you phrase it:
-- "prepare for interviews" → interview-prep style
 - "from scratch" → beginner depth  
 - "hands-on" → hands-on style with code exercises
 - "project-based" → capstone project included
@@ -187,6 +196,54 @@ Most "AI agents" are Python scripts that wrap API calls with retry logic. Syllab
 **Single entry point.** The user talks to one agent. The complexity is invisible.
 
 **Resumable pipeline.** File-based state means the pipeline can resume from any point.
+
+## Audio Narration
+
+Every lesson gets a spoken audio version — learners can listen while reading or on the go.
+
+- **Edge TTS** (default) — Free Microsoft neural voices, no API key, no rate limits. Generates MP3 + VTT subtitle files at build time
+- **Web Speech API** (fallback) — Browser-built-in, zero setup. Used when Edge TTS isn't available
+- **Audio player** — Glass-morphism mini-player bar, full expanded view, mobile listen mode with lock-screen controls
+- **Keyboard shortcuts** — Space (play/pause), ←/→ (skip 15s), [/] (speed), M (mute)
+
+Configure in `syllabus.config.js`:
+```js
+audio: {
+  enabled: true,
+  provider: 'edge-tts',        // edge-tts | web-speech | none
+  voice: 'en-US-AriaNeural',   // Microsoft neural voice
+  fallback: 'web-speech',
+}
+```
+
+## Auto-Deployment
+
+After the quality audit passes, your tutorial is deployed to free hosting automatically.
+
+| Provider | Auth | Free Tier |
+|----------|------|-----------|
+| **Vercel** (default) | One-time OAuth or token | 100GB/mo bandwidth |
+| **Netlify** | One-time OAuth or token | 100GB/mo bandwidth |
+| **Surge** | Email only — zero friction | Unlimited |
+| **GitHub Pages** | `gh` CLI (already authed) | 100GB/mo bandwidth |
+| **Cloudflare Pages** | OAuth or token | Unlimited bandwidth |
+
+Configure in `syllabus.config.js`:
+```js
+deploy: {
+  enabled: true,
+  provider: 'auto',    // auto | vercel | netlify | surge | github-pages | cloudflare
+  autoPrompt: true,    // ask before deploying
+}
+```
+
+After completion you get:
+```
+✅ Tutorial ready! (Quality score: 98/100)
+   🖥️  Local:  cd syllabus-output && npm run dev
+   🌐 Live:   https://learn-react-hooks.vercel.app
+   🎧 Audio:  24 lessons narrated (~40 min)
+```
 
 ## License
 

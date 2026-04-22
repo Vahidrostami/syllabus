@@ -41,8 +41,10 @@ export async function scaffoldProject(brief) {
   const srcDirs = [
     'src', 'src/components', 'src/components/layout', 'src/components/lesson',
     'src/components/quiz', 'src/components/progress', 'src/components/ui',
+    'src/components/audio',
     'src/hooks', 'src/data', 'src/data/lessons', 'src/data/quizzes',
-    'src/lib', 'src/pages'
+    'src/lib', 'src/pages',
+    'public/audio'
   ];
   for (const dir of srcDirs) {
     await fs.ensureDir(path.join(outputDir, dir));
@@ -130,7 +132,28 @@ export default {
         display: ['Space Grotesk', 'sans-serif'],
         body: ['IBM Plex Sans', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
-      }
+      },
+      backdropBlur: {
+        glass: 'var(--glass-blur)',
+      },
+      boxShadow: {
+        glow: 'var(--glow-primary)',
+        'glow-accent': 'var(--glow-accent)',
+      },
+      animation: {
+        'shine': 'shine 2s ease-in-out infinite',
+        'fade-up': 'fadeUp 0.4s ease-out forwards',
+      },
+      keyframes: {
+        shine: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
+        fadeUp: {
+          from: { opacity: '0', transform: 'translateY(20px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
     },
   },
   plugins: [require('@tailwindcss/typography')],
@@ -186,10 +209,38 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
 function buildGlobalCSS(brief) {
   const themes = {
-    dark: `--bg: #0a0e1a; --surface: #131829; --surface-hover: #1a2035; --primary: #6366f1; --primary-hover: #818cf8; --accent: #22d3ee; --success: #34d399; --warning: #fbbf24; --error: #f87171; --text: #e2e8f0; --text-secondary: #94a3b8; --text-muted: #64748b; --border: #1e293b; --code-bg: #0f1320;`,
-    light: `--bg: #fafaf9; --surface: #ffffff; --surface-hover: #f5f5f4; --primary: #2563eb; --primary-hover: #3b82f6; --accent: #0891b2; --success: #16a34a; --warning: #d97706; --error: #dc2626; --text: #1c1917; --text-secondary: #57534e; --text-muted: #a8a29e; --border: #e7e5e4; --code-bg: #f5f5f4;`,
-    terminal: `--bg: #0c0c0c; --surface: #1a1a1a; --surface-hover: #222222; --primary: #22c55e; --primary-hover: #4ade80; --accent: #a3e635; --success: #22c55e; --warning: #eab308; --error: #ef4444; --text: #d4d4d4; --text-secondary: #a3a3a3; --text-muted: #737373; --border: #2a2a2a; --code-bg: #111111;`,
-    notebook: `--bg: #fffbeb; --surface: #ffffff; --surface-hover: #fef9c3; --primary: #7c3aed; --primary-hover: #8b5cf6; --accent: #f59e0b; --success: #10b981; --warning: #f59e0b; --error: #ef4444; --text: #292524; --text-secondary: #57534e; --text-muted: #a8a29e; --border: #e7e5e4; --code-bg: #f5f5f0;`
+    dark: `--bg: #0a0e1a; --surface: #131829; --surface-hover: #1a2035; --primary: #6366f1; --primary-hover: #818cf8; --accent: #22d3ee; --success: #34d399; --warning: #fbbf24; --error: #f87171; --text: #e2e8f0; --text-secondary: #94a3b8; --text-muted: #64748b; --border: #1e293b; --code-bg: #0f1320;
+    --gradient-hero: linear-gradient(135deg, #6366f1 0%, #22d3ee 50%, #34d399 100%);
+    --gradient-surface: linear-gradient(180deg, rgba(99,102,241,0.05) 0%, transparent 100%);
+    --gradient-card: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(34,211,238,0.04) 100%);
+    --mesh-bg: radial-gradient(ellipse at 20% 50%, rgba(99,102,241,0.15) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(34,211,238,0.1) 0%, transparent 50%), radial-gradient(ellipse at 50% 80%, rgba(52,211,153,0.08) 0%, transparent 50%);
+    --glass-bg: rgba(19,24,41,0.7); --glass-blur: 16px; --glass-border: rgba(255,255,255,0.08);
+    --glow-primary: 0 0 20px rgba(99,102,241,0.3); --glow-accent: 0 0 20px rgba(34,211,238,0.2);
+    --surface-rgb: 19,24,41;`,
+    light: `--bg: #fafaf9; --surface: #ffffff; --surface-hover: #f5f5f4; --primary: #2563eb; --primary-hover: #3b82f6; --accent: #0891b2; --success: #16a34a; --warning: #d97706; --error: #dc2626; --text: #1c1917; --text-secondary: #57534e; --text-muted: #a8a29e; --border: #e7e5e4; --code-bg: #f5f5f4;
+    --gradient-hero: linear-gradient(135deg, #2563eb 0%, #0891b2 50%, #16a34a 100%);
+    --gradient-surface: linear-gradient(180deg, rgba(37,99,235,0.03) 0%, transparent 100%);
+    --gradient-card: linear-gradient(135deg, rgba(37,99,235,0.04) 0%, rgba(8,145,178,0.02) 100%);
+    --mesh-bg: radial-gradient(ellipse at 20% 50%, rgba(37,99,235,0.06) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(8,145,178,0.04) 0%, transparent 50%);
+    --glass-bg: rgba(255,255,255,0.8); --glass-blur: 12px; --glass-border: rgba(0,0,0,0.06);
+    --glow-primary: 0 4px 20px rgba(37,99,235,0.12); --glow-accent: 0 4px 20px rgba(8,145,178,0.1);
+    --surface-rgb: 255,255,255;`,
+    terminal: `--bg: #0c0c0c; --surface: #1a1a1a; --surface-hover: #222222; --primary: #22c55e; --primary-hover: #4ade80; --accent: #a3e635; --success: #22c55e; --warning: #eab308; --error: #ef4444; --text: #d4d4d4; --text-secondary: #a3a3a3; --text-muted: #737373; --border: #2a2a2a; --code-bg: #111111;
+    --gradient-hero: linear-gradient(135deg, #22c55e 0%, #a3e635 50%, #22d3ee 100%);
+    --gradient-surface: linear-gradient(180deg, rgba(34,197,94,0.05) 0%, transparent 100%);
+    --gradient-card: linear-gradient(135deg, rgba(34,197,94,0.06) 0%, rgba(163,230,53,0.03) 100%);
+    --mesh-bg: radial-gradient(ellipse at 30% 50%, rgba(34,197,94,0.12) 0%, transparent 50%), radial-gradient(ellipse at 70% 30%, rgba(163,230,53,0.06) 0%, transparent 50%);
+    --glass-bg: rgba(26,26,26,0.75); --glass-blur: 16px; --glass-border: rgba(34,197,94,0.15);
+    --glow-primary: 0 0 20px rgba(34,197,94,0.3); --glow-accent: 0 0 15px rgba(163,230,53,0.2);
+    --surface-rgb: 26,26,26;`,
+    notebook: `--bg: #fffbeb; --surface: #ffffff; --surface-hover: #fef9c3; --primary: #7c3aed; --primary-hover: #8b5cf6; --accent: #f59e0b; --success: #10b981; --warning: #f59e0b; --error: #ef4444; --text: #292524; --text-secondary: #57534e; --text-muted: #a8a29e; --border: #e7e5e4; --code-bg: #f5f5f0;
+    --gradient-hero: linear-gradient(135deg, #7c3aed 0%, #f59e0b 50%, #10b981 100%);
+    --gradient-surface: linear-gradient(180deg, rgba(124,58,237,0.04) 0%, transparent 100%);
+    --gradient-card: linear-gradient(135deg, rgba(124,58,237,0.05) 0%, rgba(245,158,11,0.03) 100%);
+    --mesh-bg: radial-gradient(ellipse at 20% 40%, rgba(124,58,237,0.08) 0%, transparent 50%), radial-gradient(ellipse at 75% 60%, rgba(245,158,11,0.06) 0%, transparent 50%);
+    --glass-bg: rgba(255,255,255,0.85); --glass-blur: 12px; --glass-border: rgba(124,58,237,0.1);
+    --glow-primary: 0 4px 20px rgba(124,58,237,0.15); --glow-accent: 0 4px 20px rgba(245,158,11,0.12);
+    --surface-rgb: 255,255,255;`
   };
 
   const themeVars = themes[brief.theme] || themes.dark;
@@ -202,6 +253,28 @@ function buildGlobalCSS(brief) {
   ${themeVars}
 }
 
+/* ─── Mesh gradient background ────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: var(--mesh-bg);
+  pointer-events: none;
+}
+
+/* ─── Noise texture overlay ───────────────────────────────── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.015;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -209,6 +282,11 @@ body {
   font-family: 'IBM Plex Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   line-height: 1.75;
+}
+
+#root {
+  position: relative;
+  z-index: 2;
 }
 
 h1, h2, h3, h4 {
@@ -228,16 +306,66 @@ pre {
   overflow-x: auto;
   font-size: 0.9rem;
   line-height: 1.6;
-  border: 1px solid var(--border);
+  border: 1px solid var(--glass-border);
 }
 
+/* ─── Glassmorphism utilities ─────────────────────────────── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.glass-card:hover {
+  box-shadow: var(--glow-primary);
+  transform: translateY(-2px);
+}
+
+/* ─── Gradient text utility ───────────────────────────────── */
+.gradient-text {
+  background: var(--gradient-hero);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Progress bar shine animation ────────────────────────── */
+.progress-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: shine 2s ease-in-out infinite;
+}
+
+@keyframes shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -249,6 +377,7 @@ pre {
   background: var(--text-muted);
 }
 
+/* ─── Reduced motion ──────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -256,14 +385,14 @@ pre {
   }
 }
 
-/* Focus styles for accessibility */
+/* ─── Focus styles for accessibility ──────────────────────── */
 *:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* Skip to main content link */
+/* ─── Skip to main content link ───────────────────────────── */
 .skip-link {
   position: absolute;
   top: -100px;
@@ -273,6 +402,7 @@ pre {
   color: white;
   z-index: 100;
   transition: top 0.2s;
+  border-radius: 0 0 8px 0;
 }
 
 .skip-link:focus {
@@ -284,10 +414,19 @@ pre {
 function buildAppJsx() {
   return `import { Routes, Route } from 'react-router-dom'
 import { useState, createContext } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import syllabus from './data/syllabus.json'
 
 // Context for global state
 export const AppContext = createContext(null)
+
+const staggerContainer = {
+  animate: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } }
+};
+const staggerItem = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } }
+};
 
 export default function App() {
   const [progress, setProgress] = useState(() => {
@@ -324,98 +463,108 @@ export default function App() {
     <AppContext.Provider value={{ syllabus, progress, markComplete, sidebarOpen, setSidebarOpen }}>
       <a href="#main-content" className="skip-link">Skip to main content</a>
       
-      <div className="flex min-h-screen">
-        {/* Sidebar */}
-        <aside
-          className="w-72 border-r flex-shrink-0 flex flex-col transition-all duration-300 overflow-y-auto"
-          style={{ 
-            borderColor: 'var(--border)', 
-            background: 'var(--surface)',
-            marginLeft: sidebarOpen ? 0 : '-18rem'
-          }}
-          role="navigation"
-          aria-label="Course navigation"
-        >
-          <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
-            <h1 className="text-lg font-display font-bold" style={{ color: 'var(--primary)' }}>
-              � Syllabus
-            </h1>
-            <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
-              {syllabus.title}
-            </p>
-          </div>
-
-          {/* Progress ring */}
-          <div className="p-5 flex items-center gap-4 border-b" style={{ borderColor: 'var(--border)' }}>
-            <svg width="48" height="48" viewBox="0 0 48 48">
-              <circle cx="24" cy="24" r="20" fill="none" stroke="var(--border)" strokeWidth="4" />
-              <circle
-                cx="24" cy="24" r="20" fill="none"
-                stroke="var(--primary)" strokeWidth="4"
-                strokeDasharray={2 * Math.PI * 20}
-                strokeDashoffset={2 * Math.PI * 20 * (1 - completionPct / 100)}
-                strokeLinecap="round"
-                transform="rotate(-90 24 24)"
-                style={{ transition: 'stroke-dashoffset 0.6s ease' }}
-              />
-              <text x="24" y="24" textAnchor="middle" dominantBaseline="central"
-                fill="var(--text)" fontSize="11" fontWeight="600" fontFamily="Space Grotesk">
-                {completionPct}%
-              </text>
-            </svg>
-            <div>
-              <div className="text-sm font-medium" style={{ color: 'var(--text)' }}>
-                {progress.completedLessons.length} / {totalLessons}
+      <div className="flex min-h-screen gap-3 p-3">
+        {/* Floating Glass Sidebar */}
+        <AnimatePresence>
+          {sidebarOpen && (
+            <motion.aside
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="w-72 flex-shrink-0 flex flex-col overflow-y-auto rounded-2xl glass"
+              style={{ height: 'calc(100vh - 1.5rem)' }}
+              role="navigation"
+              aria-label="Course navigation"
+            >
+              <div className="p-5 border-b" style={{ borderColor: 'var(--glass-border)' }}>
+                <h1 className="text-lg font-display font-bold gradient-text">
+                  📚 Syllabus
+                </h1>
+                <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
+                  {syllabus.title}
+                </p>
               </div>
-              <div className="text-xs" style={{ color: 'var(--text-muted)' }}>lessons done</div>
-            </div>
-          </div>
 
-          {/* Module list */}
-          <nav className="flex-1 p-3">
-            {syllabus.modules.map((mod, mi) => (
-              <div key={mod.id} className="mb-2">
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium"
-                  style={{ color: 'var(--text-secondary)' }}>
-                  <span className="w-5 h-5 rounded-full text-xs flex items-center justify-center font-bold"
-                    style={{ background: 'var(--primary)', color: 'white', opacity: 0.8 }}>
-                    {mi + 1}
-                  </span>
-                  {mod.title}
-                </div>
-                <div className="ml-6 border-l pl-3" style={{ borderColor: 'var(--border)' }}>
-                  {mod.lessons.map(les => {
-                    const done = progress.completedLessons.includes(les.id)
-                    return (
-                      <button
-                        key={les.id}
-                        onClick={() => markComplete(les.id)}
-                        className="w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 transition-colors"
-                        style={{ 
-                          color: done ? 'var(--success)' : 'var(--text-muted)',
-                          background: progress.currentLesson === les.id ? 'var(--surface-hover)' : 'transparent'
-                        }}
-                        aria-current={progress.currentLesson === les.id ? 'page' : undefined}
-                      >
-                        <span className="text-xs">{done ? '✓' : '○'}</span>
-                        {les.title}
-                      </button>
-                    )
-                  })}
+              {/* Progress ring */}
+              <div className="p-5 flex items-center gap-4 border-b" style={{ borderColor: 'var(--glass-border)' }}>
+                <svg width="48" height="48" viewBox="0 0 48 48">
+                  <circle cx="24" cy="24" r="20" fill="none" stroke="var(--border)" strokeWidth="4" />
+                  <circle
+                    cx="24" cy="24" r="20" fill="none"
+                    stroke="var(--primary)" strokeWidth="4"
+                    strokeDasharray={2 * Math.PI * 20}
+                    strokeDashoffset={2 * Math.PI * 20 * (1 - completionPct / 100)}
+                    strokeLinecap="round"
+                    transform="rotate(-90 24 24)"
+                    style={{ transition: 'stroke-dashoffset 0.8s ease' }}
+                  />
+                  <text x="24" y="24" textAnchor="middle" dominantBaseline="central"
+                    fill="var(--text)" fontSize="11" fontWeight="600" fontFamily="Space Grotesk">
+                    {completionPct}%
+                  </text>
+                </svg>
+                <div>
+                  <div className="text-sm font-medium" style={{ color: 'var(--text)' }}>
+                    {progress.completedLessons.length} / {totalLessons}
+                  </div>
+                  <div className="text-xs" style={{ color: 'var(--text-muted)' }}>lessons done</div>
                 </div>
               </div>
-            ))}
-          </nav>
-        </aside>
+
+              {/* Module list */}
+              <nav className="flex-1 p-3">
+                {syllabus.modules.map((mod, mi) => (
+                  <div key={mod.id} className="mb-2">
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium"
+                      style={{ color: 'var(--text-secondary)' }}>
+                      <span className="w-5 h-5 rounded-full text-xs flex items-center justify-center font-bold"
+                        style={{ background: 'var(--primary)', color: 'white', opacity: 0.8 }}>
+                        {mi + 1}
+                      </span>
+                      {mod.title}
+                    </div>
+                    <div className="ml-6 border-l pl-3" style={{ borderColor: 'var(--glass-border)' }}>
+                      {mod.lessons.map(les => {
+                        const done = progress.completedLessons.includes(les.id)
+                        const isActive = progress.currentLesson === les.id
+                        return (
+                          <motion.button
+                            key={les.id}
+                            onClick={() => markComplete(les.id)}
+                            whileHover={{ x: 4 }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                            className="w-full text-left px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 transition-colors"
+                            style={{ 
+                              color: done ? 'var(--success)' : 'var(--text-muted)',
+                              background: isActive ? 'var(--surface-hover)' : 'transparent',
+                              boxShadow: isActive ? 'var(--glow-accent)' : 'none',
+                              borderLeft: isActive ? '3px solid var(--primary)' : '3px solid transparent',
+                            }}
+                            aria-current={isActive ? 'page' : undefined}
+                          >
+                            <span className="text-xs">{done ? '✓' : '○'}</span>
+                            {les.title}
+                          </motion.button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </nav>
+            </motion.aside>
+          )}
+        </AnimatePresence>
 
         {/* Main content */}
-        <main id="main-content" className="flex-1 overflow-y-auto">
+        <main id="main-content" className="flex-1 overflow-y-auto rounded-2xl glass" style={{ height: 'calc(100vh - 1.5rem)' }}>
           {/* Top bar */}
-          <header className="sticky top-0 z-10 backdrop-blur-md border-b px-6 py-3 flex items-center justify-between"
-            style={{ borderColor: 'var(--border)', background: 'color-mix(in srgb, var(--bg) 85%, transparent)' }}>
+          <header className="sticky top-0 z-10 border-b px-6 py-3 flex items-center justify-between rounded-t-2xl"
+            style={{ borderColor: 'var(--glass-border)', background: 'var(--glass-bg)', backdropFilter: 'blur(var(--glass-blur))' }}>
             <button 
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 rounded-lg transition-colors"
+              className="p-2 rounded-lg transition-colors hover:bg-white/5"
               style={{ color: 'var(--text-muted)' }}
               aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
             >
@@ -424,8 +573,8 @@ export default function App() {
             <div className="flex-1 mx-6">
               <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
                 <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{ background: 'var(--primary)', width: completionPct + '%' }}
+                  className="h-full rounded-full transition-all duration-500 progress-shine"
+                  style={{ background: 'var(--gradient-hero)', width: completionPct + '%' }}
                   role="progressbar"
                   aria-valuenow={completionPct}
                   aria-valuemin={0}
@@ -441,80 +590,104 @@ export default function App() {
 
           {/* Content area */}
           <div className="max-w-3xl mx-auto px-6 py-10">
-            <div className="mb-12">
-              <h1 className="text-4xl font-display font-bold mb-4" style={{ color: 'var(--text)' }}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+              className="mb-12"
+            >
+              <h1 className="text-4xl font-display font-bold mb-4 gradient-text">
                 {syllabus.title}
               </h1>
               <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
                 {syllabus.description}
               </p>
               <div className="flex gap-3 mt-6 flex-wrap">
-                <span className="px-3 py-1 rounded-full text-sm font-medium"
-                  style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--primary)' }}>
+                <span className="px-3 py-1 rounded-full text-sm font-medium glass"
+                  style={{ color: 'var(--primary)' }}>
                   {syllabus.difficulty}
                 </span>
-                <span className="px-3 py-1 rounded-full text-sm"
-                  style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
+                <span className="px-3 py-1 rounded-full text-sm glass"
+                  style={{ color: 'var(--text-muted)' }}>
                   ⏱ {syllabus.totalDuration}
                 </span>
-                <span className="px-3 py-1 rounded-full text-sm"
-                  style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
+                <span className="px-3 py-1 rounded-full text-sm glass"
+                  style={{ color: 'var(--text-muted)' }}>
                   📚 {syllabus.modules.length} modules
                 </span>
               </div>
-            </div>
+            </motion.div>
 
             {/* Module cards */}
-            {syllabus.modules.map((mod, mi) => {
-              const modLessons = mod.lessons.length
-              const modDone = mod.lessons.filter(l => progress.completedLessons.includes(l.id)).length
-              const modPct = Math.round((modDone / modLessons) * 100)
+            <motion.div variants={staggerContainer} initial="initial" animate="animate">
+              {syllabus.modules.map((mod, mi) => {
+                const modLessons = mod.lessons.length
+                const modDone = mod.lessons.filter(l => progress.completedLessons.includes(l.id)).length
+                const modPct = Math.round((modDone / modLessons) * 100)
 
-              return (
-                <div key={mod.id} className="mb-6 rounded-2xl border p-6 transition-all"
-                  style={{ 
-                    borderColor: modPct === 100 ? 'var(--success)' : 'var(--border)', 
-                    background: 'var(--surface)',
-                    opacity: modPct === 100 ? 0.85 : 1 
-                  }}>
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <span className="text-xs font-medium px-2 py-0.5 rounded"
-                        style={{ background: 'var(--primary)', color: 'white', opacity: 0.9 }}>
-                        Module {mi + 1}
+                return (
+                  <motion.div
+                    key={mod.id}
+                    variants={staggerItem}
+                    whileHover={{ y: -2, boxShadow: 'var(--glow-primary)' }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                    className="mb-6 rounded-2xl p-6 glass-card"
+                    style={{ 
+                      borderColor: modPct === 100 ? 'var(--success)' : undefined,
+                      background: 'var(--gradient-card)',
+                    }}
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <span className="text-xs font-medium px-2 py-0.5 rounded-full"
+                          style={{ background: 'var(--primary)', color: 'white' }}>
+                          Module {mi + 1}
+                        </span>
+                        <h2 className="text-xl font-display font-bold mt-2" style={{ color: 'var(--text)' }}>
+                          {mod.title}
+                        </h2>
+                      </div>
+                      {modPct === 100 && (
+                        <motion.span
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: 'spring', stiffness: 500, damping: 15, delay: 0.2 }}
+                          className="text-2xl" role="img" aria-label="Completed"
+                        >
+                          ✅
+                        </motion.span>
+                      )}
+                    </div>
+                    <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                      {mod.description}
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
+                        <motion.div
+                          className="h-full rounded-full"
+                          initial={{ width: 0 }}
+                          animate={{ width: modPct + '%' }}
+                          transition={{ duration: 0.6, ease: 'easeOut' }}
+                          style={{ background: modPct === 100 ? 'var(--success)' : 'var(--gradient-hero)' }}
+                        />
+                      </div>
+                      <span className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>
+                        {modDone}/{modLessons}
                       </span>
-                      <h2 className="text-xl font-display font-bold mt-2" style={{ color: 'var(--text)' }}>
-                        {mod.title}
-                      </h2>
                     </div>
-                    {modPct === 100 && (
-                      <span className="text-2xl" role="img" aria-label="Completed">✅</span>
-                    )}
-                  </div>
-                  <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-                    {mod.description}
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 h-1.5 rounded-full" style={{ background: 'var(--border)' }}>
-                      <div className="h-full rounded-full transition-all duration-300"
-                        style={{ background: modPct === 100 ? 'var(--success)' : 'var(--primary)', width: modPct + '%' }} />
+                    <div className="mt-4 flex gap-3 flex-wrap">
+                      <span className="text-xs" style={{ color: 'var(--text-muted)' }}>⏱ {mod.duration}</span>
+                      {mod.lessons.some(l => l.hasCodeExample) && (
+                        <span className="text-xs" style={{ color: 'var(--accent)' }}>💻 Code examples</span>
+                      )}
+                      {mod.quiz && (
+                        <span className="text-xs" style={{ color: 'var(--warning)' }}>🧩 Quiz</span>
+                      )}
                     </div>
-                    <span className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>
-                      {modDone}/{modLessons}
-                    </span>
-                  </div>
-                  <div className="mt-4 flex gap-2 flex-wrap">
-                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>⏱ {mod.duration}</span>
-                    {mod.lessons.some(l => l.hasCodeExample) && (
-                      <span className="text-xs" style={{ color: 'var(--accent)' }}>💻 Code examples</span>
-                    )}
-                    {mod.quiz && (
-                      <span className="text-xs" style={{ color: 'var(--warning)' }}>🧩 Quiz</span>
-                    )}
-                  </div>
-                </div>
-              )
-            })}
+                  </motion.div>
+                )
+              })}
+            </motion.div>
           </div>
         </main>
       </div>
