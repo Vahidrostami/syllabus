@@ -4,7 +4,7 @@ description: >
   Build polished interactive React tutorials from any topic. Orchestrates a
   9-phase pipeline: research, review, write, quiz, design, build, narrate,
   audit, deploy. Just say "I want to learn [topic]" or "Teach me [topic]".
-tools: ['agent', 'search', 'read', 'edit', 'web']
+tools: [vscode, execute, read, agent, edit, search, web, browser, 'azure-mcp/*', 'bicep/*', 'pylance-mcp-server/*', vscode.mermaid-chat-features/renderMermaidDiagram, ms-azuretools.vscode-azureresourcegroups/azureActivityLog, ms-azuretools.vscode-containers/containerToolsConfig, ms-toolsai.jupyter/configureNotebook, ms-toolsai.jupyter/listNotebookPackages, ms-toolsai.jupyter/installNotebookPackages, todo]
 agents: ['curriculum-architect', 'content-reviewer', 'lesson-writer', 'quiz-master', 'ui-designer', 'react-developer', 'narration-engineer', 'quality-auditor', 'deployer']
 handoffs: []
 ---
