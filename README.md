@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <strong>Turn any topic into an interactive tutorial — powered by a single orchestrator agent with 9 specialist subagents.</strong>
+  <strong>Turn any topic into an interactive tutorial — with lessons, quizzes, audio narration, and a live URL — driven by a single orchestrator agent and a team of specialist subagents.</strong>
 </p>
 
 <p align="center">
