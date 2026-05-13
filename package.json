@@ -1,10 +1,10 @@
 {
-  "name": "syllabus",
+  "name": "@vahidrostami/syllabus",
   "version": "0.2.0",
   "description": "An agentic education builder that turns any topic into a fully interactive tutorial",
   "type": "module",
   "bin": {
-    "syllabus": "./src/cli/index.js"
+    "syllabus": "src/cli/index.js"
   },
   "scripts": {
     "start": "node src/cli/index.js",
@@ -22,8 +22,30 @@
     "copilot",
     "claude"
   ],
-  "author": "",
+  "author": "Vahid Rostami",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vahidrostami/syllabus.git"
+  },
+  "homepage": "https://github.com/vahidrostami/syllabus#readme",
+  "bugs": {
+    "url": "https://github.com/vahidrostami/syllabus/issues"
+  },
+  "files": [
+    "src",
+    ".github/agents",
+    ".github/skills",
+    ".github/copilot-instructions.md",
+    ".github/banner.svg",
+    "examples",
+    "CLAUDE.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "chalk": "^5.3.0",
     "commander": "^12.1.0",

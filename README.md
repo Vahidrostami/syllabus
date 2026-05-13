@@ -41,7 +41,7 @@ Output: syllabus-output/ — a working Vite + React app with
 
 ```bash
 # Install
-npm install -g syllabus
+npm install -g @vahidrostami/syllabus
 
 # Add agents & skills to your project  
 cd my-project
