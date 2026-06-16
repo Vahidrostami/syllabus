@@ -27,7 +27,7 @@ export default {
   audio: {
     enabled: true,                // Generate audio for all lessons
     provider: 'edge-tts',         // edge-tts (free, neural voices) | web-speech (browser-only) | none
-    voice: 'en-US-AriaNeural',    // Microsoft neural voice (see edge-tts --list-voices)
+    voice: 'en-US-AndrewMultilingualNeural', // Microsoft neural voice (see edge-tts --list-voices)
     speed: 1.0,                   // Default playback speed (user can change in player)
     fallback: 'web-speech',       // Fallback if edge-tts unavailable
   },

@@ -48,6 +48,13 @@ program
         await fs.copy(skillsSrc, skillsDst, { overwrite: false });
       }
 
+      // Copy reliability hooks (workspace hooks + scripts)
+      const hooksSrc = path.join(PKG_ROOT, '.github/hooks');
+      const hooksDst = path.resolve('.github/hooks');
+      if (await fs.pathExists(hooksSrc)) {
+        await fs.copy(hooksSrc, hooksDst, { overwrite: false });
+      }
+
       // Copy copilot instructions
       const copilotSrc = path.join(PKG_ROOT, '.github/copilot-instructions.md');
       const copilotDst = path.resolve('.github/copilot-instructions.md');
@@ -80,6 +87,9 @@ program
       console.log(chalk.hex('#22d3ee')('  │   ├── narration-engineer.agent.md ← Audio narration'));
       console.log(chalk.gray('  │   ├── quality-auditor.agent.md'));
       console.log(chalk.hex('#22d3ee')('  │   └── deployer.agent.md           ← Auto-deployment'));
+      console.log(chalk.gray('  ├── hooks/'));
+      console.log(chalk.hex('#22d3ee')('  │   ├── syllabus-hooks.json          ← Reliability guard rails'));
+      console.log(chalk.gray('  │   └── scripts/                     ← Artifact, audio & build validators'));
       console.log(chalk.gray('  └── skills/'));
       console.log(chalk.gray('      ├── web-research/SKILL.md'));
       console.log(chalk.gray('      ├── syllabus-design/SKILL.md'));

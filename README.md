@@ -211,7 +211,7 @@ Configure in `syllabus.config.js`:
 audio: {
   enabled: true,
   provider: 'edge-tts',        // edge-tts | web-speech | none
-  voice: 'en-US-AriaNeural',   // Microsoft neural voice
+  voice: 'en-US-AndrewMultilingualNeural', // Microsoft neural voice
   fallback: 'web-speech',
 }
 ```

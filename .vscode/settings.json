@@ -1,0 +1,6 @@
+{
+  // Enables the agent-scoped `hooks:` block in narration-engineer.agent.md
+  // (the per-agent "definition of done" for audio narration).
+  // Workspace hooks in .github/hooks/ load automatically and do NOT need this.
+  "chat.useCustomAgentHooks": true
+}

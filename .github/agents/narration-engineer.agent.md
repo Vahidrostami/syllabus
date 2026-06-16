@@ -6,6 +6,11 @@ description: >
   for the React audio player.
 user-invocable: false
 tools: ['read', 'edit', 'search']
+hooks:
+  Stop:
+    - type: command
+      command: "node .github/hooks/scripts/check-narration-complete.mjs"
+      timeout: 60
 ---
 
 # Narration Engineer
@@ -64,15 +69,15 @@ les-XX-XX.json → les-XX-XX.txt (spoken script)
 For each lesson script, generate an MP3:
 
 ```bash
-edge-tts --voice "en-US-AriaNeural" --file les-01-01.txt --write-media public/audio/les-01-01.mp3 --write-subtitles public/audio/les-01-01.vtt
+edge-tts --voice "en-US-AndrewMultilingualNeural" --file les-01-01.txt --write-media public/audio/les-01-01.mp3 --write-subtitles public/audio/les-01-01.vtt
 ```
 
 **Voice selection by topic language:**
-- English: `en-US-AriaNeural` (female, clear, warm) or `en-US-GuyNeural` (male)
+- English: `en-US-AndrewMultilingualNeural` (male, natural) or `en-US-AvaMultilingualNeural` (female, natural)
 - Spanish: `es-ES-ElviraNeural`
 - French: `fr-FR-DeniseNeural`
 - German: `de-DE-KatjaNeural`
-- Default: `en-US-AriaNeural`
+- Default: `en-US-AndrewMultilingualNeural`
 
 **Audio settings:**
 - Rate: `+0%` (normal speed — user controls playback speed in the player)
@@ -85,7 +90,7 @@ Create `syllabus-output/src/data/audio-manifest.json`:
 
 ```json
 {
-  "voice": "en-US-AriaNeural",
+  "voice": "en-US-AndrewMultilingualNeural",
   "generatedAt": "2026-04-11T12:00:00Z",
   "lessons": [
     {
@@ -141,7 +146,7 @@ If Edge TTS cannot be installed (no Python, restricted environment):
 Print after completion:
 ```
 🎙️ [8/9] Narration Engineer — Audio generated
-   Voice: en-US-AriaNeural
+   Voice: en-US-AndrewMultilingualNeural
    Lessons: 24 audio files
    Duration: ~40 min total
    Size: 48MB
