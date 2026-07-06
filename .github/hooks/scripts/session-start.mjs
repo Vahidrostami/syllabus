@@ -23,6 +23,8 @@ function detectPhase(out) {
   if (some('src/data/quizzes')) return 'DESIGN — quizzes done; pick theme/layout.';
   if (some('src/data/lessons')) return 'QUIZ — lessons done; write quizzes.';
   if (has('src/data/syllabus.json')) return 'REVIEW/WRITE — syllabus exists.';
+  if (exists(path.join(out, 'src/data/source/manifest.json')))
+    return 'RESEARCH — source document extracted; build the syllabus from the corpus.';
   return 'BRIEF — syllabus-output exists but is empty.';
 }
 

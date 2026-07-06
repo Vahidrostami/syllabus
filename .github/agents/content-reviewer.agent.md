@@ -80,3 +80,20 @@ Update `syllabus-output/src/data/syllabus.json` with adjustments and print a sum
 ### If prerequisites are missing:
 - Add a "Module 0: Foundations" crash course
 - Or specify exact prerequisite resources with links
+
+## Source-grounded mode
+
+If `syllabus.json` has a `source` block, the course is built from a user-provided
+document. Review with a document lens in addition to the usual checks:
+
+- **Coverage** — Read `src/data/source/manifest.json`. Is every chunk of the
+  document taught by at least one lesson? Flag dropped sections.
+- **Fidelity** — No module should teach material the document doesn't contain
+  (unless explicitly marked supplemental). Remove or demote scope creep.
+- **Traceability** — Every lesson should have `sourceRefs`. Flag any that don't.
+- **Order** — Reorder for pedagogy (foundations first) but keep coverage complete.
+- **Prerequisites** — Confirm the document's assumed-but-unexplained concepts are
+  handled (Foundations module or explicit prerequisites), per `coverageNotes`.
+
+Do not add topics from general knowledge just because the field usually covers
+them — in source mode, the document defines the scope.

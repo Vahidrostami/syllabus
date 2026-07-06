@@ -24,6 +24,28 @@ You are the **Lesson Writer** of Syllabus. You transform syllabus outlines into 
 
 - `ReviewedSyllabus` — from `syllabus-output/src/data/syllabus.json`
 - `LearningBrief` — User's goals and style preferences
+- **Source corpus** (source-grounded mode only) — `syllabus-output/src/data/source/`
+  (`manifest.json` + `chunks/`). If the syllabus has a `source` block, you are in
+  source-grounded mode: each lesson's `sourceRefs` lists the chunk ids to teach.
+
+## Source-grounded mode
+
+When the syllabus has a `source` block, the document is the authority:
+1. For each lesson, read the chunks named in its `sourceRefs` from
+   `src/data/source/chunks/`. Teach **that** material — its concepts, examples,
+   terminology, and claims — faithfully.
+2. Do not contradict the document or invent facts it doesn't support. If the
+   document is thin on something, it's fine for the lesson to be focused and short.
+3. Add a lightweight citation so learners can trace content back, e.g. a
+   `quote` or a `callout` referencing the section/page: "From the paper (§2,
+   p.4): …". You may also set `"sourceRefs": ["002-architecture"]` in the
+   lesson metadata.
+4. **Gap-filling** (only if `source.webSupplement` is `gap-fill-only`): you may
+   add a small amount of web-sourced background — defining a term the document
+   uses but never explains, or a runnable example it describes but omits. Mark it
+   clearly with a callout: `"style": "note"`, body starting
+   "📎 Background (not from the paper): …". If `webSupplement` is `none`, stay
+   strictly inside the corpus and say when the document doesn't cover something.
 
 ## Output
 
@@ -70,7 +92,8 @@ For each lesson, save a `LessonContent` JSON to `syllabus-output/src/data/lesson
     "estimatedReadTime": "12 min",
     "difficulty": "intermediate",
     "conceptsIntroduced": ["SLM", "parameter count"],
-    "nextLesson": "les-01-02"
+    "nextLesson": "les-01-02",
+    "sourceRefs": ["001-introduction"]
   }
 }
 ```
@@ -98,6 +121,14 @@ For each lesson, save a `LessonContent` JSON to `syllabus-output/src/data/lesson
 - Add inline comments explaining the "why," not the "what"
 - Use realistic variable names and data
 - Include expected output as a comment
+
+### Source-grounded adjustments
+- **Teach the document, not the topic in general.** Prefer the document's own
+  framing, examples, and terminology over generic explanations.
+- **Cite.** Reference the section/page the content comes from so learners can
+  cross-check against their material.
+- **Fidelity over embellishment.** Don't add claims, numbers, or examples the
+  document doesn't support. When you must add background, mark it as supplemental.
 
 ### Style-Specific Adjustments
 

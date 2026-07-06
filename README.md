@@ -78,6 +78,7 @@ Copies these files into your project:
 │   └── deployer.agent.md                ← Subagent: deploys to free hosting
 └── skills/
     ├── web-research/SKILL.md            ← How to research topics
+    ├── source-extraction/SKILL.md       ← Build a course from your own document
     ├── syllabus-design/SKILL.md         ← Bloom's taxonomy, module arcs
     ├── content-writing/SKILL.md         ← Writing formulas, code standards
     ├── quiz-generation/SKILL.md         ← Question types, difficulty curves
@@ -159,6 +160,28 @@ The AI infers depth, style, and goals from how you phrase it:
 - "from scratch" → beginner depth  
 - "hands-on" → hands-on style with code exercises
 - "project-based" → capstone project included
+
+### Build a course from your own document
+
+Syllabus can also build a course grounded in a document you provide — a white
+paper, spec, book chapter, or internal doc — instead of web research:
+
+```
+Build a course from this white paper: ./docs/paper.pdf
+
+Teach me everything in ~/Downloads/Day_1_v3.pdf
+
+Turn this spec into a tutorial (I'll paste the text)
+```
+
+In this **source-grounded mode** the document is the source of truth: every
+module, lesson, and quiz traces back to the document, with citations. The web is
+used only to fill gaps (defining assumed terms, adding a missing runnable
+example), and that supplemental content is clearly marked.
+
+> The document must be a **local file** (PDF / Markdown / TXT / DOCX / EPUB /
+> HTML) in your workspace or pasted text — login-gated links (Google Drive,
+> Notion, SharePoint) can't be read, so download the file first.
 
 ## Customization
 
