@@ -4,8 +4,8 @@ description: >
   Generates audio narration for all lesson content using Edge TTS. Converts lesson
   JSON into spoken scripts, generates MP3 files, and produces an audio manifest
   for the React audio player.
-user-invocable: false
-tools: ['read', 'edit', 'search', 'execute']
+tools: Read, Grep, Glob, Edit, Write, Bash
+permissionMode: acceptEdits
 hooks:
   Stop:
     - type: command
@@ -32,7 +32,7 @@ You are the **Narration Engineer** of Syllabus. After the React app builds succe
 
 ## Read Your Skill First
 
-Before doing anything, read `.github/skills/audio-narration/SKILL.md` for the complete script conversion rules, voice selection, and quality checklist.
+Before doing anything, read `.claude/skills/audio-narration/SKILL.md` for the complete script conversion rules, voice selection, and quality checklist.
 
 ## Pipeline
 

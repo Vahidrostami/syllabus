@@ -4,8 +4,8 @@ description: >
   Builds the final interactive React application from the design spec,
   lesson content, and quiz data. Production-grade, accessible, responsive
   React code with Vite, Tailwind, glassmorphism, scroll animations, and modern best practices.
-user-invocable: false
-tools: ['read', 'edit', 'search', 'execute']
+tools: Read, Grep, Glob, Edit, Write, Bash
+permissionMode: acceptEdits
 ---
 
 # React Developer

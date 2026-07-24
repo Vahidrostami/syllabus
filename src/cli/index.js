@@ -6,6 +6,7 @@ import ora from 'ora';
 import fs from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createInterface } from 'node:readline/promises';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PKG_ROOT = path.join(__dirname, '../..');
@@ -28,94 +29,54 @@ program
 program
   .command('init')
   .description('Add Syllabus agents & skills to your project')
-  .action(async () => {
+  .option('-a, --agent <agent>', 'Target coding agent: copilot, claude, or both')
+  .option('-y, --yes', 'Skip the prompt and scaffold for both agents')
+  .action(async (opts) => {
     console.log(chalk.hex('#6366f1').bold(BANNER));
 
-    const spinner = ora('Installing Syllabus agents & skills...').start();
+    // Decide which coding agent(s) to scaffold for.
+    let agent = (opts.agent || '').toLowerCase();
+    const VALID_AGENTS = ['copilot', 'claude', 'both'];
+    if (agent && !VALID_AGENTS.includes(agent)) {
+      console.log(chalk.red(`  ✗ Unknown --agent "${opts.agent}". Use one of: copilot, claude, both.`));
+      process.exit(1);
+    }
+    if (!agent) {
+      agent = (opts.yes || !process.stdin.isTTY) ? 'both' : await promptForAgent();
+    }
+
+    const label = agent === 'both'
+      ? 'GitHub Copilot + Claude Code'
+      : agent === 'claude' ? 'Claude Code' : 'GitHub Copilot';
+    const spinner = ora(`Installing Syllabus for ${label}...`).start();
 
     try {
-      // Copy agent definitions
-      const agentsSrc = path.join(PKG_ROOT, '.github/agents');
-      const agentsDst = path.resolve('.github/agents');
-      if (await fs.pathExists(agentsSrc)) {
-        await fs.copy(agentsSrc, agentsDst, { overwrite: false });
+      const wantCopilot = agent === 'copilot' || agent === 'both';
+      const wantClaude = agent === 'claude' || agent === 'both';
+
+      // AGENTS.md is the single, tool-neutral orchestration brief both toolchains
+      // read: Copilot loads it automatically; Claude Code via CLAUDE.md's @AGENTS.md import.
+      await copyInto('AGENTS.md', 'AGENTS.md');
+
+      if (wantCopilot) {
+        await copyInto('.github/agents', '.github/agents');
+        await copyInto('.github/skills', '.github/skills');
+        await copyInto('.github/hooks', '.github/hooks');
+        await copyInto('.github/copilot-instructions.md', '.github/copilot-instructions.md');
       }
 
-      // Copy skill definitions
-      const skillsSrc = path.join(PKG_ROOT, '.github/skills');
-      const skillsDst = path.resolve('.github/skills');
-      if (await fs.pathExists(skillsSrc)) {
-        await fs.copy(skillsSrc, skillsDst, { overwrite: false });
-      }
-
-      // Copy reliability hooks (workspace hooks + scripts)
-      const hooksSrc = path.join(PKG_ROOT, '.github/hooks');
-      const hooksDst = path.resolve('.github/hooks');
-      if (await fs.pathExists(hooksSrc)) {
-        await fs.copy(hooksSrc, hooksDst, { overwrite: false });
-      }
-
-      // Copy copilot instructions
-      const copilotSrc = path.join(PKG_ROOT, '.github/copilot-instructions.md');
-      const copilotDst = path.resolve('.github/copilot-instructions.md');
-      if (await fs.pathExists(copilotSrc)) {
-        await fs.copy(copilotSrc, copilotDst, { overwrite: false });
-      }
-
-      // Copy CLAUDE.md
-      const claudeSrc = path.join(PKG_ROOT, 'CLAUDE.md');
-      const claudeDst = path.resolve('CLAUDE.md');
-      if (await fs.pathExists(claudeSrc)) {
-        await fs.copy(claudeSrc, claudeDst, { overwrite: false });
+      if (wantClaude) {
+        await copyInto('.claude/agents', '.claude/agents');
+        await copyInto('.claude/settings.json', '.claude/settings.json');
+        // Claude Code discovers skills under .claude/skills; reuse the single source in .github/skills.
+        await copyInto('.github/skills', '.claude/skills');
+        // The reliability hooks in .claude/settings.json reference these shared scripts.
+        await copyInto('.github/hooks/scripts', '.github/hooks/scripts');
+        await copyInto('CLAUDE.md', 'CLAUDE.md');
       }
 
       spinner.succeed(chalk.green('Syllabus installed!'));
-
-      console.log();
-      console.log(chalk.white('  What was added:'));
-      console.log();
-      console.log(chalk.gray('  .github/'));
-      console.log(chalk.gray('  ├── copilot-instructions.md        ← Copilot reads this'));
-      console.log(chalk.gray('  ├── agents/'));
-      console.log(chalk.cyan('  │   ├── syllabus.agent.md          ← Orchestrator (user-facing)'));
-      console.log(chalk.gray('  │   ├── curriculum-architect.agent.md'));
-      console.log(chalk.gray('  │   ├── content-reviewer.agent.md'));
-      console.log(chalk.gray('  │   ├── lesson-writer.agent.md'));
-      console.log(chalk.gray('  │   ├── quiz-master.agent.md'));
-      console.log(chalk.gray('  │   ├── ui-designer.agent.md'));
-      console.log(chalk.gray('  │   ├── react-developer.agent.md'));
-      console.log(chalk.hex('#22d3ee')('  │   ├── narration-engineer.agent.md ← Audio narration'));
-      console.log(chalk.gray('  │   ├── quality-auditor.agent.md'));
-      console.log(chalk.hex('#22d3ee')('  │   └── deployer.agent.md           ← Auto-deployment'));
-      console.log(chalk.gray('  ├── hooks/'));
-      console.log(chalk.hex('#22d3ee')('  │   ├── syllabus-hooks.json          ← Reliability guard rails'));
-      console.log(chalk.gray('  │   └── scripts/                     ← Artifact, audio & build validators'));
-      console.log(chalk.gray('  └── skills/'));
-      console.log(chalk.gray('      ├── web-research/SKILL.md'));
-      console.log(chalk.gray('      ├── syllabus-design/SKILL.md'));
-      console.log(chalk.gray('      ├── content-writing/SKILL.md'));
-      console.log(chalk.gray('      ├── quiz-generation/SKILL.md'));
-      console.log(chalk.gray('      ├── react-coding/SKILL.md'));
-      console.log(chalk.gray('      ├── design-system/SKILL.md'));
-      console.log(chalk.gray('      ├── progress-tracking/SKILL.md'));
-      console.log(chalk.gray('      ├── accessibility/SKILL.md'));
-      console.log(chalk.gray('      ├── audit-automation/SKILL.md'));
-      console.log(chalk.hex('#22d3ee')('      ├── audio-narration/SKILL.md     ← TTS & audio player'));
-      console.log(chalk.hex('#22d3ee')('      └── deployment/SKILL.md          ← Free hosting'));
-      console.log(chalk.gray('  CLAUDE.md                          ← Claude Code reads this'));
-
-      console.log();
-      console.log(chalk.white.bold('  How to use:'));
-      console.log();
-      console.log(chalk.white('  In GitHub Copilot (switch to @Syllabus agent):'));
-      console.log(chalk.cyan('    "I want to learn fine-tuning SLMs to prepare for interviews"'));
-      console.log();
-      console.log(chalk.white('  In Claude Code:'));
-      console.log(chalk.cyan('    "Build me a tutorial on Kubernetes for backend devs"'));
-      console.log();
-      console.log(chalk.gray('  That\'s it. @Syllabus orchestrates 6 specialist agents,'));
-      console.log(chalk.gray('  researches your topic, and builds a full React tutorial.'));
-      console.log();
+      printInitSummary(agent);
     } catch (err) {
       spinner.fail(chalk.red('Init failed: ' + err.message));
       process.exit(1);
@@ -472,6 +433,84 @@ function summarizeCategory(name, checks) {
   const passed = checks.filter(c => c.passed).length;
   const failures = checks.filter(c => !c.passed).map(c => c.name);
   return { name, passed, total: checks.length, failures };
+}
+
+// Copy a file or directory from the installed package into the current project,
+// without overwriting anything the user already has.
+async function copyInto(srcRel, dstRel) {
+  const src = path.join(PKG_ROOT, srcRel);
+  const dst = path.resolve(dstRel);
+  if (await fs.pathExists(src)) {
+    await fs.copy(src, dst, { overwrite: false });
+  }
+}
+
+// Interactively ask which coding agent to scaffold for. Defaults to "both".
+async function promptForAgent() {
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  try {
+    console.log(chalk.white.bold('  Which coding agent are you using?'));
+    console.log();
+    console.log('    ' + chalk.cyan('1') + chalk.white(') GitHub Copilot') + chalk.gray('   — .github/ agents, skills, hooks'));
+    console.log('    ' + chalk.cyan('2') + chalk.white(') Claude Code') + chalk.gray('      — .claude/ agents, skills, settings + CLAUDE.md'));
+    console.log('    ' + chalk.cyan('3') + chalk.white(') Both') + chalk.gray('             — recommended'));
+    console.log();
+    const answer = (await rl.question(chalk.white('  Choose 1, 2, or 3 [3]: '))).trim().toLowerCase();
+    if (answer === '1' || answer === 'copilot') return 'copilot';
+    if (answer === '2' || answer === 'claude') return 'claude';
+    return 'both';
+  } finally {
+    rl.close();
+  }
+}
+
+// Print a post-install summary tailored to the chosen agent(s).
+function printInitSummary(agent) {
+  const wantCopilot = agent === 'copilot' || agent === 'both';
+  const wantClaude = agent === 'claude' || agent === 'both';
+
+  console.log();
+  console.log(chalk.white('  What was added:'));
+  console.log();
+
+  console.log(chalk.gray('  AGENTS.md                          ← Shared orchestration brief (both tools read it)'));
+
+  if (wantCopilot) {
+    console.log(chalk.gray('  .github/'));
+    console.log(chalk.gray('  ├── copilot-instructions.md        ← Copilot pointer → AGENTS.md'));
+    console.log(chalk.cyan('  ├── agents/syllabus.agent.md       ← Orchestrator (user-facing)'));
+    console.log(chalk.gray('  │   └── + 9 specialist agents (*.agent.md)'));
+    console.log(chalk.hex('#22d3ee')('  ├── hooks/                         ← Reliability guard rails'));
+    console.log(chalk.gray('  └── skills/                        ← 12 skill guides'));
+  } else if (wantClaude) {
+    console.log(chalk.gray('  .github/hooks/scripts/             ← Shared reliability hook scripts'));
+  }
+
+  if (wantClaude) {
+    console.log(chalk.gray('  .claude/'));
+    console.log(chalk.cyan('  ├── agents/syllabus.md             ← Orchestrator subagent'));
+    console.log(chalk.gray('  │   └── + 9 specialist subagents (*.md)'));
+    console.log(chalk.hex('#22d3ee')('  ├── settings.json                  ← Permissions + reliability hooks'));
+    console.log(chalk.gray('  └── skills/                        ← 12 skill guides'));
+    console.log(chalk.gray('  CLAUDE.md                          ← Claude reads this → imports AGENTS.md'));
+  }
+
+  console.log();
+  console.log(chalk.white.bold('  How to use:'));
+  console.log();
+  if (wantCopilot) {
+    console.log(chalk.white('  In GitHub Copilot (switch to the @Syllabus agent):'));
+    console.log(chalk.cyan('    "I want to learn fine-tuning SLMs to prepare for interviews"'));
+    console.log();
+  }
+  if (wantClaude) {
+    console.log(chalk.white('  In Claude Code (run `claude`, or `claude --agent syllabus`):'));
+    console.log(chalk.cyan('    "Build me a tutorial on Kubernetes for backend devs"'));
+    console.log();
+  }
+  console.log(chalk.gray('  That\'s it. Syllabus orchestrates 9 specialist agents,'));
+  console.log(chalk.gray('  researches your topic, and builds a full React tutorial.'));
+  console.log();
 }
 
 program.parse();

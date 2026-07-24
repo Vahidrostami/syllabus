@@ -39,7 +39,10 @@
     ".github/hooks",
     ".github/copilot-instructions.md",
     ".github/banner.svg",
+    ".claude/agents",
+    ".claude/settings.json",
     "examples",
+    "AGENTS.md",
     "CLAUDE.md",
     "README.md",
     "LICENSE"

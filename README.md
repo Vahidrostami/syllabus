@@ -16,10 +16,10 @@
 ## How It Works
 
 ```
-You (in Copilot, switch to @Syllabus agent):
+You (Copilot: @Syllabus agent · Claude Code: run `claude`):
   "I want to learn fine-tuning SLMs"
 
-@Syllabus detects the phase, asks a clarifying question if needed, then:
+Syllabus detects the phase, asks a clarifying question if needed, then:
   🔍 Curriculum Architect — web searches the topic, builds a syllabus
   🎯 Content Reviewer    — adjusts for your goals & level
   ✍️  Lesson Writer       — writes explanations, code examples, diagrams
@@ -43,28 +43,36 @@ Output: syllabus-output/ — a working Vite + React app with
 # Install
 npm install -g @vahidrostami/syllabus
 
-# Add agents & skills to your project  
+# Add agents & skills to your project (asks which coding agent to set up)
 cd my-project
-syllabus init
+syllabus init                 # or: syllabus init --agent claude|copilot|both
 
-# Now switch to @Syllabus in Copilot Agent Mode and type:
+# GitHub Copilot: switch to the @Syllabus agent, then type a topic.
+# Claude Code:    run `claude` (or `claude --agent syllabus`), then type a topic:
 "I want to learn fine-tuning SLMs"
 
-# @Syllabus orchestrates everything. When it's done:
+# Syllabus orchestrates everything. When it's done:
 cd syllabus-output && npm run dev
 ```
 
 ## What Gets Installed
 
-```
-syllabus init
+```bash
+syllabus init                 # prompts: GitHub Copilot, Claude Code, or Both
+syllabus init --agent claude  # non-interactive
 ```
 
-Copies these files into your project:
+`syllabus init` asks which coding agent you use and scaffolds the matching layout.
+Both layouts share one tool-neutral brief — **`AGENTS.md`** — which GitHub Copilot
+loads automatically and Claude Code loads through `CLAUDE.md` (a one-line
+`@AGENTS.md` import). One source of truth, read by both tools.
+
+**GitHub Copilot** (`--agent copilot`):
 
 ```
+AGENTS.md                                ← Shared, tool-neutral orchestration brief
 .github/
-├── copilot-instructions.md              ← Copilot reads this first
+├── copilot-instructions.md              ← Short pointer to AGENTS.md + @Syllabus
 ├── agents/
 │   ├── syllabus.agent.md                ← Orchestrator (user-facing)
 │   ├── curriculum-architect.agent.md    ← Subagent: researches & plans
@@ -76,6 +84,7 @@ Copies these files into your project:
 │   ├── narration-engineer.agent.md      ← Subagent: generates audio narration
 │   ├── quality-auditor.agent.md         ← Subagent: audits & fixes issues
 │   └── deployer.agent.md                ← Subagent: deploys to free hosting
+├── hooks/                               ← Reliability guardrails (scripts)
 └── skills/
     ├── web-research/SKILL.md            ← How to research topics
     ├── source-extraction/SKILL.md       ← Build a course from your own document
@@ -89,7 +98,20 @@ Copies these files into your project:
     ├── audit-automation/SKILL.md        ← Auto-fix patterns for auditing
     ├── audio-narration/SKILL.md         ← TTS, audio player, Web Speech
     └── deployment/SKILL.md              ← Free hosting providers
-CLAUDE.md                                ← Claude Code reads this
+```
+
+**Claude Code** (`--agent claude`) — the same agents & skills in Claude's native layout:
+
+```
+AGENTS.md                                ← Shared, tool-neutral orchestration brief
+.claude/
+├── agents/
+│   ├── syllabus.md                      ← Orchestrator subagent
+│   └── … + 9 specialist subagents (*.md)
+├── settings.json                        ← Permissions + reliability hooks
+└── skills/                              ← the same 12 SKILL.md guides
+.github/hooks/scripts/                   ← shared reliability hook scripts
+CLAUDE.md                                ← One line: @AGENTS.md
 ```
 
 That's the entire system. No runtime dependencies. No server. No API keys.
@@ -98,7 +120,7 @@ That's the entire system. No runtime dependencies. No server. No API keys.
 
 ### Single Orchestrator, Invisible Specialists
 
-The user only interacts with `@Syllabus`. The 9 specialist agents have `user-invocable: false` in their frontmatter — they're hidden from the agent picker and only accessible as subagents.
+The user only interacts with the orchestrator (`@Syllabus`). The 9 specialist agents are hidden from the agent picker — Copilot marks them `user-invocable: false`, and Claude Code invokes them only through the Task tool. Either way, they run only as subagents.
 
 ```
 User → @Syllabus (the only visible agent)
@@ -136,13 +158,13 @@ Skills are reusable reference directories that agents load on demand:
 
 | Tool | How |
 |------|-----|
-| **GitHub Copilot** | Switch to `@Syllabus` agent in the agent picker |
-| **Claude Code** | Reads `CLAUDE.md` → follows `syllabus.agent.md` |
-| **Any AI coding assistant** | That reads `.md` files and has web search + file creation |
+| **GitHub Copilot** | Switch to the `@Syllabus` agent (reads `AGENTS.md` automatically) |
+| **Claude Code** | Run `claude` — `CLAUDE.md` imports `@AGENTS.md` — or `claude --agent syllabus` |
+| **Any AI coding assistant** | Reads the standard `AGENTS.md` brief plus `.md` agent files; needs web search + file creation |
 
 ## Example Prompts
 
-Once you've run `syllabus init`, switch to `@Syllabus` and try:
+Once you've run `syllabus init`, start Syllabus (the `@Syllabus` agent in Copilot, or `claude` in Claude Code) and try:
 
 ```
 I want to learn fine-tuning SLMs
@@ -187,14 +209,14 @@ example), and that supplemental content is clearly marked.
 
 ### Modify agents
 
-Edit any `.agent.md` file in `.github/agents/` to change behavior:
+Edit any agent file (`.github/agents/*.agent.md` for Copilot, `.claude/agents/*.md` for Claude Code) to change behavior:
 - Want shorter tutorials? Edit `curriculum-architect.agent.md` module count guidelines
 - Want more quizzes? Edit `quiz-master.agent.md` per-module targets
 - Prefer Vue over React? Rewrite `react-developer.agent.md` for Vue
 
 ### Add new skills
 
-Create a new directory in `.github/skills/` with a `SKILL.md` file:
+Create a new directory in `.github/skills/` (or `.claude/skills/` for Claude Code) with a `SKILL.md` file:
 ```
 .github/skills/my-skill/
   SKILL.md     ← Required, with name + description frontmatter

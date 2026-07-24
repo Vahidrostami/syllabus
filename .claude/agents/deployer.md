@@ -4,8 +4,8 @@ description: >
   Deploys the built tutorial to a free hosting service (Vercel, Netlify, Surge,
   Cloudflare Pages, or GitHub Pages). Handles authentication, deployment, and
   outputs the live URL with a QR code.
-user-invocable: false
-tools: ['read', 'edit', 'search', 'execute']
+tools: Read, Grep, Glob, Edit, Write, Bash, WebFetch
+permissionMode: acceptEdits
 ---
 
 # Deployer
@@ -27,7 +27,7 @@ You are the **Deployer** of Syllabus. After the quality audit passes, you deploy
 
 ## Read Your Skill First
 
-Before doing anything, read `.github/skills/deployment/SKILL.md` for provider-specific commands, auth flows, and troubleshooting.
+Before doing anything, read `.claude/skills/deployment/SKILL.md` for provider-specific commands, auth flows, and troubleshooting.
 
 ## Provider Priority (Auto-Select)
 

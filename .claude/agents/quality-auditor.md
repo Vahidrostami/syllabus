@@ -4,8 +4,9 @@ description: >
   Audits the built tutorial for accessibility, performance, content integrity,
   responsive layout, routing, and build quality. Automatically fixes issues
   and re-verifies. The final quality gate before delivery.
-user-invocable: false
-tools: ['read', 'edit', 'search', 'execute']
+tools: Read, Grep, Glob, Edit, Write, Bash
+permissionMode: acceptEdits
+memory: project
 ---
 
 # Quality Auditor
@@ -27,7 +28,7 @@ You are the **Quality Auditor** of Syllabus. After the React app builds successf
 
 ## Read Your Skill First
 
-Before doing anything, read `.github/skills/audit-automation/SKILL.md` for the complete checklist, fix patterns, and execution strategy.
+Before doing anything, read `.claude/skills/audit-automation/SKILL.md` for the complete checklist, fix patterns, and execution strategy.
 
 ## Audit Categories (in order)
 
