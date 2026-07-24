@@ -8,6 +8,7 @@ Trigger when the user says anything like:
 - "I want to learn [topic]"
 - "Teach me [topic]"
 - "Build a tutorial on [topic]"
+- "Build a course from this [document/PDF/white paper]" / "Teach me everything in [file]" (source-grounded mode)
 
 ## What to do
 
@@ -25,8 +26,11 @@ That orchestrator file is your playbook. It detects the current phase by checkin
 ```
 Read syllabus.agent.md → it tells you to:
 
-1. BRIEF: Parse/clarify the user's request (topic, depth, style, goals)
-2. Read curriculum-architect.agent.md → search the web, build syllabus.json
+1. BRIEF: Parse/clarify the user's request (topic, depth, style, goals). Detect any
+   source document the user wants the course built from (source-grounded mode).
+2. Read curriculum-architect.agent.md → EITHER search the web (topic mode) OR
+   extract & chunk the document via source-extraction/SKILL.md (source mode), then
+   build syllabus.json
 3. Read content-reviewer.agent.md → review & adjust the syllabus
 4. Read lesson-writer.agent.md → write lesson content JSON files
 5. Read quiz-master.agent.md → create quiz JSON files  

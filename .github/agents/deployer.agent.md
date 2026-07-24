@@ -46,16 +46,25 @@ If no provider is configured, try in this order until one works:
 ```bash
 cd syllabus-output
 
-# Check if logged in
-npx vercel whoami 2>/dev/null
+# Authenticate if needed
+npx vercel whoami 2>/dev/null || npx vercel login
 
-# If not logged in, authenticate
-npx vercel login
+# 1. Build a MEANINGFUL, deterministic project name from the tutorial title.
+#    A bare `vercel --prod` names the project after the folder ("syllabus-output"),
+#    which is generic AND overwrites the previous tutorial. Never rely on it.
+TITLE=$(node -p "require('./src/data/syllabus.json').title || 'tutorial'")
+SLUG="learn-$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' | cut -c1-40 | sed -E 's/-+$//')"
 
-# Deploy (zero-config for Vite)
+# 2. Clear any stale link from a previous topic, then bind this dir to THIS
+#    topic's own project (created if missing).
+rm -rf .vercel
+npx vercel project add "$SLUG" 2>/dev/null || true
+npx vercel link --yes --project "$SLUG"
+
+# 3. Deploy to production.
 npx vercel --prod --yes
 
-# Output: https://learn-topic-name.vercel.app
+# Output: https://learn-<topic>.vercel.app  (distinct per topic, stable across re-deploys)
 ```
 
 **Vite compatibility**: Vercel auto-detects Vite projects. No `vercel.json` needed for static sites. If SPA routing is needed, create:
@@ -159,7 +168,7 @@ All providers need SPA routing support since the app uses React Router. Before d
    b. If no token → run interactive login (opens browser for OAuth)
    c. If non-interactive → fall back to Surge (email-only auth)
 5. Create SPA routing file for the selected provider
-6. Deploy dist/ folder
+6. Name the project/site after the tutorial title (a meaningful `learn-<topic>` slug — never the `syllabus-output` folder name, which is generic and overwrites prior deploys), then deploy dist/ folder
 7. Parse deployment URL from output
 8. Generate QR code for the URL (using terminal QR or a simple text QR)
 9. Display results

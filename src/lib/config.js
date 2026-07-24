@@ -21,7 +21,7 @@ const DEFAULT_CONFIG = {
   audio: {
     enabled: true,
     provider: 'edge-tts',
-    voice: 'en-US-AriaNeural',
+    voice: 'en-US-AndrewMultilingualNeural',
     speed: 1.0,
     fallback: 'web-speech',
   },

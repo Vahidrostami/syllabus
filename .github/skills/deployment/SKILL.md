@@ -32,21 +32,29 @@ npx vercel login
 
 ### Deployment Commands
 
+> **Always set a project name.** A bare `npx vercel --prod --yes` names the project after the
+> working directory (`syllabus-output`), so every tutorial lands on the same generic URL and
+> overwrites the previous one. Name it after the tutorial title instead. (`--name` is deprecated
+> and ignored by current Vercel CLI — use `vercel link --project`.)
+
 ```bash
 cd syllabus-output
 
-# First deploy (creates project)
+# Meaningful, deterministic project name from the tutorial title
+TITLE=$(node -p "require('./src/data/syllabus.json').title || 'tutorial'")
+SLUG="learn-$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' | cut -c1-40 | sed -E 's/-+$//')"
+
+# Bind syllabus-output/ to THIS topic's project (clear any stale link first)
+rm -rf .vercel
+npx vercel project add "$SLUG" 2>/dev/null || true
+npx vercel link --yes --project "$SLUG"
+
+# Deploy (add --token "$VERCEL_TOKEN" for non-interactive CI)
 npx vercel --prod --yes
-
-# Subsequent deploys
-npx vercel --prod --yes
-
-# With custom project name
-npx vercel --prod --yes --name learn-python-basics
-
-# With token (non-interactive)
-npx vercel --prod --yes --token "$VERCEL_TOKEN"
 ```
+
+Different topics get distinct URLs automatically; re-deploying the *same* topic updates the
+same URL. For a unique URL on every build, append a suffix: `SLUG="$SLUG-$(date +%s | tail -c 5)"`.
 
 ### SPA Routing Config
 
@@ -64,6 +72,7 @@ Create `syllabus-output/vercel.json`:
 | Issue | Fix |
 |---|---|
 | "Not authenticated" | Run `npx vercel login` or set `VERCEL_TOKEN` |
+| Generic URL (`syllabus-output.vercel.app`) / overwrote previous tutorial | Name the project after the topic before deploy: `rm -rf .vercel && npx vercel link --yes --project learn-<topic>` |
 | "Project not found" | Use `--yes` flag to auto-create |
 | 404 on refresh | Add `vercel.json` with rewrites |
 | "Too many requests" | Wait a minute, free tier has rate limits |

@@ -8,6 +8,7 @@ Trigger when the user says anything like:
 - "I want to learn [topic]"
 - "Teach me [topic]"
 - "Build a tutorial on [topic]"
+- "Build a course from this [document/PDF/white paper]" or "Teach me everything in [file]" (source-grounded mode)
 
 ## What to do
 

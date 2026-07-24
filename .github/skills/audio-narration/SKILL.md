@@ -81,7 +81,7 @@ Insert SSML-style pauses between logical segments:
 
 | Language | Recommended Voice | Backup Voice |
 |---|---|---|
-| English | `en-US-AriaNeural` | `en-US-GuyNeural` |
+| English | `en-US-AndrewMultilingualNeural` | `en-US-AvaMultilingualNeural` |
 | Spanish | `es-ES-ElviraNeural` | `es-MX-DaliaNeural` |
 | French | `fr-FR-DeniseNeural` | `fr-FR-HenriNeural` |
 | German | `de-DE-KatjaNeural` | `de-DE-ConradNeural` |
@@ -92,9 +92,9 @@ Insert SSML-style pauses between logical segments:
 
 ### Voice Quality Tips
 
-- Aria Neural is the highest quality English voice — clear, warm, professional
-- For technical content, Aria's pacing handles jargon well
-- For conversational content, consider Guy Neural for variety
+- en-US-AndrewMultilingualNeural is a newer, highly natural English voice — conversational and low-fatigue over long lessons
+- The Multilingual variants pronounce framework names, acronyms, and proper nouns (e.g. "PyTorch", "GPU") more accurately
+- For a female voice, en-US-AvaMultilingualNeural is the natural-sounding counterpart
 - Don't mix voices within a single lesson — pick one for the whole tutorial
 
 ## Edge TTS CLI Commands
@@ -102,7 +102,7 @@ Insert SSML-style pauses between logical segments:
 ### Single Lesson Generation
 ```bash
 edge-tts \
-  --voice "en-US-AriaNeural" \
+  --voice "en-US-AndrewMultilingualNeural" \
   --rate "+0%" \
   --file scripts/les-01-01.txt \
   --write-media public/audio/les-01-01.mp3 \
@@ -112,7 +112,7 @@ edge-tts \
 ### Batch Generation Script
 ```bash
 #!/bin/bash
-VOICE="en-US-AriaNeural"
+VOICE="en-US-AndrewMultilingualNeural"
 RATE="+0%"
 
 for script in scripts/les-*.txt; do
@@ -139,7 +139,7 @@ edge-tts --list-voices | grep "en-US"
 ```json
 {
   "provider": "edge-tts",
-  "voice": "en-US-AriaNeural",
+  "voice": "en-US-AndrewMultilingualNeural",
   "generatedAt": "2026-04-11T12:00:00Z",
   "lessons": [
     {

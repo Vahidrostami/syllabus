@@ -21,7 +21,8 @@ On every invocation, check the `syllabus-output/` directory to determine the cur
 
 | Files present | Phase | Action |
 |---------------|-------|--------|
-| Nothing / no directory | **BRIEF** | Ask clarifying questions, then → @curriculum-architect |
+| Nothing / no directory | **BRIEF** | Ask clarifying questions, detect any source document, then → @curriculum-architect |
+| `src/data/source/` only (no syllabus) | **RESEARCH** | Corpus extracted; → @curriculum-architect to build the syllabus |
 | `src/data/syllabus.json` only | **REVIEW** | → @content-reviewer |
 | `src/data/syllabus.json` reviewed | **WRITE** | → @lesson-writer |
 | `src/data/lessons/` populated | **QUIZ** | → @quiz-master |
@@ -40,6 +41,26 @@ This is the only phase you execute directly. Extract from the user's message:
 - **depth**: beginner / intermediate / advanced (infer if not stated)
 - **style**: hands-on / conceptual / project-based / interview-prep (infer from context)
 - **goals**: why they're learning (career, curiosity, interview, project)
+- **sources**: any document the user wants the course built *from* (a PDF, white
+  paper, spec, book chapter, pasted text). This switches on **source-grounded mode**.
+- **webSupplement**: for source mode — `gap-fill-only` (default) or `none` (strict).
+
+#### Detecting a source document
+
+If the user says things like "build a course from this PDF", "teach me everything
+in this white paper", "turn this doc/spec into a tutorial", or attaches/points at
+a file, treat it as **source-grounded mode**:
+
+- A **local file path** (e.g. `~/Downloads/Day_1_v3.pdf`, `./docs/spec.md`) or
+  **pasted text** → record it in `sources` and proceed.
+- A **login-gated URL** (Google Drive/Docs, Notion, SharePoint, paywalled) → you
+  cannot read it. Ask the user to download the file into the workspace or paste
+  the text, then proceed. Do **not** try to fetch gated URLs.
+- A **public, directly-downloadable URL** (raw `.pdf`/`.md`/`.txt`) → you may
+  `curl -L -o docs/<name> <url>` first, then treat it as a local file.
+
+If no source is given, stay in the default **web-researched mode** (research the
+topic on the web) — the existing behavior.
 
 If the topic is clear but depth/style/goals are ambiguous, ask **one** clarifying question:
 > "I'll build you a tutorial on [topic]. Quick question: is this for interview prep, hands-on practice, or deep conceptual understanding?"
@@ -51,20 +72,24 @@ Print:
 📚 Syllabus — Building your tutorial
 
 📋 I understand you want to learn:
-   Topic: [topic]
-   Depth: [depth]
-   Style: [style]  
-   Goals: [goals]
+   Topic:  [topic]
+   Depth:  [depth]
+   Style:  [style]
+   Goals:  [goals]
+   Source: [document name if source-grounded, else "web research"]
 ```
 
-Then create `syllabus-output/` and hand off to @curriculum-architect.
+Then create `syllabus-output/` and hand off to @curriculum-architect, passing the
+`sources` and `webSupplement` in the brief so it knows which mode to use.
 
 ### Phase Execution
 
 For each phase, hand off to the appropriate specialist subagent. Each subagent reads its own skills, does its work, and writes files to `syllabus-output/`.
 
-**Step 1 → @curriculum-architect**: Research topic, build `syllabus.json`
+**Step 1 → @curriculum-architect**: Research topic (web mode) or ingest the
+document (source-grounded mode), then build `syllabus.json`
 Print: `🔍 [1/9] Curriculum Architect — Syllabus ready: N modules, N lessons`
+(In source mode: `… from <document> — N modules, N lessons`)
 
 **Step 2 → @content-reviewer**: Review syllabus against user's goals, adjust
 Print: `🎯 [2/9] Content Reviewer — Adjusted: [changes summary]`
@@ -136,3 +161,5 @@ After the pipeline completes:
 5. **Resume from any point.** If the pipeline was interrupted, detect which files exist and resume from the right phase — don't start over.
 
 6. **The output is a real app.** When you're done, the user should be able to `npm run dev` and see a working tutorial in their browser.
+
+7. **Source-grounded vs. web-researched.** If the user supplies a document, the course is built *from that document* — it's the authority. Web research is only for filling gaps (and marked as supplemental). If no document is supplied, research the topic on the web as usual. Never try to read login-gated URLs; ask for a local file or pasted text instead.

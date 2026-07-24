@@ -36,6 +36,7 @@
     "src",
     ".github/agents",
     ".github/skills",
+    ".github/hooks",
     ".github/copilot-instructions.md",
     ".github/banner.svg",
     "examples",
