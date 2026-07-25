@@ -5,6 +5,7 @@ description: >
   Cloudflare Pages, or GitHub Pages). Handles authentication, deployment, and
   outputs the live URL with a QR code.
 tools: Read, Grep, Glob, Edit, Write, Bash, WebFetch
+model: haiku
 permissionMode: acceptEdits
 ---
 

@@ -6,6 +6,8 @@ description: >
   for the React audio player.
 user-invocable: false
 tools: ['read', 'edit', 'search', 'execute']
+# Mechanical: JSON → spoken script → edge-tts. No reasoning depth required.
+model: ['Claude Haiku 4.5 (copilot)', 'GPT-5 mini (copilot)', 'Claude Sonnet 4.5 (copilot)']
 hooks:
   Stop:
     - type: command

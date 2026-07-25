@@ -5,6 +5,11 @@ description: >
   9-phase pipeline: research, review, write, quiz, design, build, narrate,
   audit, deploy. Just say "I want to learn [topic]" or "Teach me [topic]".
 tools: Task, Read, Write, Edit, Bash, Grep, Glob, WebSearch, WebFetch
+# Orchestration bookkeeping only — the specialists pin their own models.
+# Keep this on `inherit` so the model you pick at session start is the one used
+# for the whole run: switching a live conversation's model discards its prompt
+# cache and re-bills the entire prefix.
+model: inherit
 ---
 
 # Syllabus — Interactive Tutorial Builder
@@ -26,8 +31,8 @@ On every invocation, check the `syllabus-output/` directory to determine the cur
 | Nothing / no directory | **BRIEF** | Ask clarifying questions, detect any source document, then → `curriculum-architect` |
 | `src/data/source/` only (no syllabus) | **RESEARCH** | Corpus extracted; → `curriculum-architect` to build the syllabus |
 | `src/data/syllabus.json` only | **REVIEW** | → `content-reviewer` |
-| `src/data/syllabus.json` reviewed | **WRITE** | → `lesson-writer` |
-| `src/data/lessons/` populated | **QUIZ** | → `quiz-master` |
+| `src/data/syllabus.json` reviewed | **WRITE** | Run `node scripts/make-module-briefs.mjs`, then fan out → `lesson-writer` once per module |
+| `src/data/lessons/` populated | **QUIZ** | Run `node scripts/validate-course-data.mjs`; → `quiz-master` only for failing modules |
 | `src/data/quizzes/` populated | **DESIGN** | → `ui-designer` |
 | `src/lib/theme.js` exists | **BUILD** | → `react-developer` |
 | All components exist | **VERIFY** | Run `npm install && npm run build` |
@@ -81,8 +86,17 @@ Print:
    Source: [document name if source-grounded, else "web research"]
 ```
 
-Then create `syllabus-output/` and hand off to the `curriculum-architect` subagent,
-passing the `sources` and `webSupplement` in the brief so it knows which mode to use.
+Then create `syllabus-output/` and write the brief to
+`syllabus-output/.briefs/learning-brief.json` (`topic`, `depth`, `style`, `goals`,
+`sources`, `webSupplement`). Every later per-module agent inherits tone and goals
+from that file, so you never have to re-explain them — or re-ask the user.
+
+Ask **all** clarifying questions here, in this phase. Never pause mid-pipeline for
+something you could have asked up front: each pause lets the prompt cache expire
+and the whole context gets re-billed on resume.
+
+Then hand off to the `curriculum-architect` subagent, passing the `sources` and
+`webSupplement` in the brief so it knows which mode to use.
 
 ### Phase Execution
 
@@ -97,11 +111,37 @@ Print: `🔍 [1/9] Curriculum Architect — Syllabus ready: N modules, N lessons
 **Step 2 → `content-reviewer`**: Review syllabus against user's goals, adjust
 Print: `🎯 [2/9] Content Reviewer — Adjusted: [changes summary]`
 
-**Step 3 → `lesson-writer`**: Write lesson content for each module
-Print: `✍️  [3/9] Lesson Writer — N lessons written`
+**Step 3 → `lesson-writer` (one Task per module)**: First run
+`node scripts/make-module-briefs.mjs` to slice `syllabus.json` into a small,
+self-contained brief per module. Then launch `lesson-writer` **once for each
+module**, passing only that module's brief path. Each invocation writes the
+module's lessons *and* its quiz.
 
-**Step 4 → `quiz-master`**: Create quizzes for each module
-Print: `🧩 [4/9] Quiz Master — N questions, N coding challenges`
+```
+node scripts/make-module-briefs.mjs
+# then, for each entry in syllabus-output/.briefs/index.json:
+#   Task(lesson-writer, "Author syllabus-output/.briefs/mod-01.json")
+#   Task(lesson-writer, "Author syllabus-output/.briefs/mod-02.json")
+#   ...
+```
+
+These Tasks are independent — launch them in parallel where the tool allows it.
+Never ask one `lesson-writer` Task to write the whole course. Its context would
+grow with every lesson and get re-read on every turn. Give each Task exactly one
+brief and nothing else.
+Print: `✍️  [3/9] Lesson Writer — N lessons written across N modules`
+
+**Step 4 → validation gate, then `quiz-master` only if needed**: step 3 already
+produced the quizzes, so verify them with code rather than a model pass:
+
+```bash
+node scripts/validate-course-data.mjs
+```
+
+If it exits 0, the phase is done — do **not** launch `quiz-master`. If it reports
+failures, launch `quiz-master` once per **failing** module, passing that module's
+brief path and the reported problems. Re-run the validator until it passes.
+Print: `🧩 [4/9] Quiz Master — N questions validated, N modules repaired`
 
 **Step 5 → `ui-designer`**: Choose theme, design layout (including audio player styling)
 Print: `🎨 [5/9] UI Designer — [theme name] theme, responsive layout, audio player`
@@ -166,3 +206,8 @@ After the pipeline completes:
 6. **The output is a real app.** When you're done, the user should be able to `npm run dev` and see a working tutorial in their browser.
 
 7. **Source-grounded vs. web-researched.** If the user supplies a document, the course is built *from that document* — it's the authority. Web research is only for filling gaps (and marked as supplemental). If no document is supplied, research the topic on the web as usual. Never try to read login-gated URLs; ask for a local file or pasted text instead.
+
+8. **Context economy.** Read `.claude/skills/context-economy/SKILL.md`. Shard
+   long phases into per-module invocations, hand deterministic work to the
+   scripts in `scripts/`, and never re-read what you already have. Most of a
+   run's cost is context carried across turns, not content produced.

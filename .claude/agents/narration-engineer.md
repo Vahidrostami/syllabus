@@ -5,6 +5,8 @@ description: >
   JSON into spoken scripts, generates MP3 files, and produces an audio manifest
   for the React audio player.
 tools: Read, Grep, Glob, Edit, Write, Bash
+# Mechanical: JSON → spoken script → edge-tts. No reasoning depth required.
+model: haiku
 permissionMode: acceptEdits
 hooks:
   Stop:

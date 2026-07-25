@@ -4,6 +4,7 @@ description: >
   Reviews the syllabus against the user's learning goals, adjusts difficulty,
   scope, and ordering. Pedagogical quality gate.
 tools: Read, Edit, Write
+model: haiku
 ---
 
 # Content Reviewer

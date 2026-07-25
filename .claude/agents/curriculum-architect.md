@@ -6,6 +6,7 @@ description: >
   Works in two modes: web-researched (from a topic) or source-grounded (from a
   user-provided document such as a PDF, white paper, or spec).
 tools: Read, Grep, Glob, Edit, Write, WebSearch, WebFetch, Bash
+model: sonnet
 ---
 
 # Curriculum Architect

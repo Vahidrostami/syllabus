@@ -9,6 +9,8 @@
   "scripts": {
     "start": "node src/cli/index.js",
     "dev": "node --watch src/cli/index.js",
+    "briefs": "node scripts/make-module-briefs.mjs",
+    "validate:course": "node scripts/validate-course-data.mjs",
     "test": "node --test src/**/*.test.js"
   },
   "keywords": [
@@ -34,6 +36,7 @@
   },
   "files": [
     "src",
+    "scripts",
     ".github/agents",
     ".github/skills",
     ".github/hooks",
@@ -41,6 +44,7 @@
     ".github/banner.svg",
     ".claude/agents",
     ".claude/settings.json",
+    ".vscode/settings.json",
     "examples",
     "AGENTS.md",
     "CLAUDE.md",

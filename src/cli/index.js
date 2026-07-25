@@ -58,11 +58,18 @@ program
       // read: Copilot loads it automatically; Claude Code via CLAUDE.md's @AGENTS.md import.
       await copyInto('AGENTS.md', 'AGENTS.md');
 
+      // Deterministic pipeline steps the agents shell out to (module briefs,
+      // course-data validation). Both toolchains invoke these by path.
+      await copyInto('scripts', 'scripts');
+
       if (wantCopilot) {
         await copyInto('.github/agents', '.github/agents');
         await copyInto('.github/skills', '.github/skills');
         await copyInto('.github/hooks', '.github/hooks');
         await copyInto('.github/copilot-instructions.md', '.github/copilot-instructions.md');
+        // Enables custom agent hooks and points VS Code at .github/hooks only,
+        // so Claude-format hook configs aren't loaded twice.
+        await copyInto('.vscode/settings.json', '.vscode/settings.json');
       }
 
       if (wantClaude) {
@@ -451,7 +458,7 @@ async function promptForAgent() {
   try {
     console.log(chalk.white.bold('  Which coding agent are you using?'));
     console.log();
-    console.log('    ' + chalk.cyan('1') + chalk.white(') GitHub Copilot') + chalk.gray('   — .github/ agents, skills, hooks'));
+    console.log('    ' + chalk.cyan('1') + chalk.white(') GitHub Copilot') + chalk.gray('   — .github/ agents, skills, hooks + .vscode settings'));
     console.log('    ' + chalk.cyan('2') + chalk.white(') Claude Code') + chalk.gray('      — .claude/ agents, skills, settings + CLAUDE.md'));
     console.log('    ' + chalk.cyan('3') + chalk.white(') Both') + chalk.gray('             — recommended'));
     console.log();
@@ -474,14 +481,16 @@ function printInitSummary(agent) {
   console.log();
 
   console.log(chalk.gray('  AGENTS.md                          ← Shared orchestration brief (both tools read it)'));
+  console.log(chalk.gray('  scripts/                           ← Deterministic pipeline steps (briefs, validation)'));
 
   if (wantCopilot) {
     console.log(chalk.gray('  .github/'));
     console.log(chalk.gray('  ├── copilot-instructions.md        ← Copilot pointer → AGENTS.md'));
     console.log(chalk.cyan('  ├── agents/syllabus.agent.md       ← Orchestrator (user-facing)'));
-    console.log(chalk.gray('  │   └── + 9 specialist agents (*.agent.md)'));
+    console.log(chalk.gray('  │   └── + 9 specialist agents (*.agent.md), each with its own model'));
     console.log(chalk.hex('#22d3ee')('  ├── hooks/                         ← Reliability guard rails'));
-    console.log(chalk.gray('  └── skills/                        ← 12 skill guides'));
+    console.log(chalk.gray('  └── skills/                        ← 13 skill guides'));
+    console.log(chalk.gray('  .vscode/settings.json              ← Enables agent hooks in VS Code'));
   } else if (wantClaude) {
     console.log(chalk.gray('  .github/hooks/scripts/             ← Shared reliability hook scripts'));
   }
@@ -489,9 +498,9 @@ function printInitSummary(agent) {
   if (wantClaude) {
     console.log(chalk.gray('  .claude/'));
     console.log(chalk.cyan('  ├── agents/syllabus.md             ← Orchestrator subagent'));
-    console.log(chalk.gray('  │   └── + 9 specialist subagents (*.md)'));
+    console.log(chalk.gray('  │   └── + 9 specialist subagents (*.md), each with its own model'));
     console.log(chalk.hex('#22d3ee')('  ├── settings.json                  ← Permissions + reliability hooks'));
-    console.log(chalk.gray('  └── skills/                        ← 12 skill guides'));
+    console.log(chalk.gray('  └── skills/                        ← 13 skill guides'));
     console.log(chalk.gray('  CLAUDE.md                          ← Claude reads this → imports AGENTS.md'));
   }
 

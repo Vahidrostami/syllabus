@@ -5,6 +5,7 @@ description: >
   animations, glassmorphism, gradients, and micro-interactions for the generated tutorial.
 user-invocable: false
 tools: ['read', 'edit']
+model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 mini (copilot)']
 ---
 
 # UI Designer

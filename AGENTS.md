@@ -35,8 +35,8 @@ capabilities directly:
 1. **BRIEF** — Parse/clarify the request (topic, depth, style, goals). Detect any source document the user wants the course built from (source-grounded mode).
 2. **curriculum-architect** — EITHER research the topic on the web (topic mode) OR extract & chunk the document via the `source-extraction` skill (source mode), then build `syllabus.json`.
 3. **content-reviewer** — review & adjust the syllabus.
-4. **lesson-writer** — write lesson content JSON files.
-5. **quiz-master** — create quiz JSON files.
+4. **lesson-writer** — invoked **once per module** with a pre-sliced brief from `scripts/make-module-briefs.mjs`; writes that module's lesson JSON *and* its quiz.
+5. **validation gate** — `scripts/validate-course-data.mjs` checks lessons and quizzes deterministically; **quiz-master** is invoked only for modules it flags.
 6. **ui-designer** — pick theme, define layout, audio-player design.
 7. **react-developer** — write all React components with visual effects & audio player.
 8. **Build** — run `npm install && npm run build` and verify it works.
@@ -50,6 +50,17 @@ current phase by checking which files already exist, so it can resume from any p
 ## Key rules
 
 - Delegate each phase to its specialist agent.
+- **Shard long phases.** Never hand one agent "do all N modules" — fan out one
+  invocation per module with its own small brief. Context carried across turns is
+  the dominant cost of a run, and it grows quadratically in a single long agent.
+- **Prefer scripts over model passes** for anything deterministic (slicing the
+  syllabus, validating course data, scaffolding, narration, deploy).
+- **Each specialist pins its own model** in its agent file — strongest for lesson
+  prose, smallest for checklist and mechanical work. Subagents run in isolated
+  contexts with their own caches, so this costs nothing extra. Don't change the
+  orchestrator's model mid-run: that discards its prompt cache and re-bills the
+  whole conversation.
+- Ask every clarifying question during BRIEF; never pause mid-pipeline.
 - Show emoji progress after each step.
 - If the build fails, fix it yourself.
 - The user should be able to `cd syllabus-output && npm run dev` when you're done.
@@ -61,5 +72,6 @@ current phase by checking which files already exist, so it can resume from any p
 Specialist agents load reusable skill guides on demand: `web-research`,
 `source-extraction`, `syllabus-design`, `content-writing`, `quiz-generation`,
 `react-coding`, `design-system`, `progress-tracking`, `accessibility`,
-`audit-automation`, `audio-narration`, `deployment`. Copilot reads them from
-`.github/skills/`; Claude Code from `.claude/skills/`.
+`audit-automation`, `audio-narration`, `deployment`, `context-economy`. Copilot
+reads them from `.github/skills/`; Claude Code from `.claude/skills/` (a symlink
+to the same directory, so there is exactly one copy).

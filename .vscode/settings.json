@@ -2,5 +2,22 @@
   // Enables the agent-scoped `hooks:` block in narration-engineer.agent.md
   // (the per-agent "definition of done" for audio narration).
   // Workspace hooks in .github/hooks/ load automatically and do NOT need this.
-  "chat.useCustomAgentHooks": true
+  "chat.useCustomAgentHooks": true,
+
+  // This repo ships the same hooks twice, once per toolchain:
+  //   .github/hooks/syllabus-hooks.json  -> string commands ("node path/script.mjs")
+  //   .claude/settings.json              -> exec form ("command": "node", "args": [...])
+  //
+  // VS Code loads BOTH by default. Its hook schema has no `args` property, so the
+  // .claude entries would run a bare `node`, which reads stdin as source, fails to
+  // parse the hook payload, exits non-zero, and surfaces as a non-blocking hook
+  // warning — while also registering every hook a second time.
+  //
+  // Claude Code needs the exec form (it substitutes ${CLAUDE_PROJECT_DIR} into
+  // `args`), so the fix is to point VS Code at its own copy only.
+  "chat.hookFilesLocations": {
+    ".github/hooks": true,
+    ".claude/settings.json": false,
+    ".claude/settings.local.json": false
+  }
 }

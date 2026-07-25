@@ -4,6 +4,7 @@ description: >
   Designs the visual experience: theme, layout, component specs, typography,
   animations, glassmorphism, gradients, and micro-interactions for the generated tutorial.
 tools: Read, Edit, Write
+model: sonnet
 ---
 
 # UI Designer

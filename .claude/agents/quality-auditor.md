@@ -5,6 +5,8 @@ description: >
   responsive layout, routing, and build quality. Automatically fixes issues
   and re-verifies. The final quality gate before delivery.
 tools: Read, Grep, Glob, Edit, Write, Bash
+# Runs tools and evaluates their output against checklists.
+model: haiku
 permissionMode: acceptEdits
 memory: project
 ---

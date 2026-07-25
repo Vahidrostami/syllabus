@@ -6,6 +6,7 @@ description: >
   React code with Vite, Tailwind, glassmorphism, scroll animations, and modern best practices.
 user-invocable: false
 tools: ['read', 'edit', 'search', 'execute']
+model: ['Claude Sonnet 4.5 (copilot)', 'Claude Opus 4.5 (copilot)']
 ---
 
 # React Developer

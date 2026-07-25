@@ -6,6 +6,7 @@ description: >
   outputs the live URL with a QR code.
 user-invocable: false
 tools: ['read', 'edit', 'search', 'execute']
+model: ['Claude Haiku 4.5 (copilot)', 'GPT-5 mini (copilot)', 'Claude Sonnet 4.5 (copilot)']
 ---
 
 # Deployer

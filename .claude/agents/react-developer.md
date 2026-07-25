@@ -5,6 +5,7 @@ description: >
   lesson content, and quiz data. Production-grade, accessible, responsive
   React code with Vite, Tailwind, glassmorphism, scroll animations, and modern best practices.
 tools: Read, Grep, Glob, Edit, Write, Bash
+model: sonnet
 permissionMode: acceptEdits
 ---
 

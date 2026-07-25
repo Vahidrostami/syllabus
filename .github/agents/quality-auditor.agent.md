@@ -6,6 +6,8 @@ description: >
   and re-verifies. The final quality gate before delivery.
 user-invocable: false
 tools: ['read', 'edit', 'search', 'execute']
+# Runs tools and evaluates their output against checklists.
+model: ['Claude Haiku 4.5 (copilot)', 'GPT-5 mini (copilot)', 'Claude Sonnet 4.5 (copilot)']
 ---
 
 # Quality Auditor
