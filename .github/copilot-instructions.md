@@ -1,15 +1,32 @@
 # Syllabus
 
-This project is **Syllabus**, an interactive tutorial builder. The full,
-tool-neutral orchestration brief lives in [AGENTS.md](../AGENTS.md), which VS Code
-loads automatically.
+An interactive tutorial builder. When a user describes a topic they want to learn, switch to the **@Syllabus** agent — it orchestrates the entire pipeline automatically.
 
-When the user says anything like "I want to learn [topic]", "Teach me [topic]",
-"Build a tutorial on [topic]", or "Build a course from this [document]", switch to
-the **@Syllabus** agent. It orchestrates the whole pipeline — research → review →
-write → quiz → design → build → narrate → audit → deploy — by delegating to the
-specialist subagents in `.github/agents/`.
+## Activation
 
-Output goes to `syllabus-output/`, a working Vite + React app the user runs with
-`cd syllabus-output && npm run dev`. If the build fails, fix it. The app includes
-audio narration and is deployed live at the end for a shareable URL.
+Trigger when the user says anything like:
+- "I want to learn [topic]"
+- "Teach me [topic]"
+- "Build a tutorial on [topic]"
+- "Build a course from this [document/PDF/white paper]" or "Teach me everything in [file]" (source-grounded mode)
+
+## What to do
+
+Switch to the **@Syllabus** agent. It handles everything:
+1. Asks brief clarifying questions if needed
+2. Delegates to specialist subagents (curriculum-architect, content-reviewer, lesson-writer, quiz-master, ui-designer, react-developer, narration-engineer, quality-auditor, deployer)
+3. Each subagent reads its own skills from `.github/skills/`
+4. Output goes to `syllabus-output/`
+5. Verifies the build works
+6. Generates audio narration for all lessons (Edge TTS or Web Speech fallback)
+7. Audits for accessibility, performance, and quality — auto-fixes issues
+8. Deploys to free hosting (Vercel/Netlify/Surge) and provides a live URL
+
+The user only interacts with @Syllabus. The 9 specialist agents are invisible subagents.
+
+## Important
+
+- If the build fails, fix it. Don't just report errors.
+- The final output must be a working React app the user can run with `cd syllabus-output && npm run dev`.
+- The app includes an audio player for listening to lessons on the go.
+- After the audit, the tutorial is deployed live — the user gets a shareable URL.

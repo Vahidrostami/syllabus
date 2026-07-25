@@ -5,7 +5,6 @@ description: >
   scope, and ordering. Pedagogical quality gate.
 user-invocable: false
 tools: ['read', 'edit']
-model: ['Claude Haiku 4.5 (copilot)', 'GPT-5 mini (copilot)', 'Claude Sonnet 4.5 (copilot)']
 ---
 
 # Content Reviewer

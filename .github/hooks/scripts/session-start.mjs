@@ -21,12 +21,8 @@ function detectPhase(out) {
   if (some('src/components')) return 'NARRATE — app built; generate audio next.';
   if (has('src/lib/theme.js')) return 'BUILD — design ready; build the React app.';
   if (some('src/data/quizzes')) return 'DESIGN — quizzes done; pick theme/layout.';
-  if (some('src/data/lessons'))
-    return 'WRITE/QUIZ — lessons exist; run `node scripts/validate-course-data.mjs` and repair only the modules it flags.';
-  if (some('.briefs'))
-    return 'WRITE — module briefs ready; invoke lesson-writer ONCE PER BRIEF in .briefs/ (lessons + that module\'s quiz).';
-  if (has('src/data/syllabus.json'))
-    return 'REVIEW/WRITE — syllabus exists; next run `node scripts/make-module-briefs.mjs`, then fan out per module.';
+  if (some('src/data/lessons')) return 'QUIZ — lessons done; write quizzes.';
+  if (has('src/data/syllabus.json')) return 'REVIEW/WRITE — syllabus exists.';
   if (exists(path.join(out, 'src/data/source/manifest.json')))
     return 'RESEARCH — source document extracted; build the syllabus from the corpus.';
   return 'BRIEF — syllabus-output exists but is empty.';
@@ -61,8 +57,6 @@ async function main() {
     `- Tooling: npm=${tools.npm ? 'yes' : 'NO'}, python=${tools.python ? 'yes' : 'no'}, ` +
       `deploy=[${[tools.vercel && 'vercel', tools.netlify && 'netlify', tools.surge && 'surge'].filter(Boolean).join(', ') || 'none found'}].`,
     '- Reminder: after generating audio, ALWAYS re-run `cd syllabus-output && npm run build` so MP3s land in dist/ before audit/deploy.',
-    '- Cost discipline: shard the WRITE phase one invocation per module brief, never re-read a file you just wrote, ' +
-      'and let `scripts/validate-course-data.mjs` decide whether a repair agent is needed at all.',
   ];
 
   injectContext('SessionStart', lines.join('\n'));

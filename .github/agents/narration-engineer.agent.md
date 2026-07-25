@@ -5,9 +5,7 @@ description: >
   JSON into spoken scripts, generates MP3 files, and produces an audio manifest
   for the React audio player.
 user-invocable: false
-tools: ['read', 'edit', 'search', 'execute']
-# Mechanical: JSON → spoken script → edge-tts. No reasoning depth required.
-model: ['Claude Haiku 4.5 (copilot)', 'GPT-5 mini (copilot)', 'Claude Sonnet 4.5 (copilot)']
+tools: ['read', 'edit', 'search']
 hooks:
   Stop:
     - type: command

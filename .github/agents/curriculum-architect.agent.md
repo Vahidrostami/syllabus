@@ -7,7 +7,6 @@ description: >
   user-provided document such as a PDF, white paper, or spec).
 user-invocable: false
 tools: ['search', 'read', 'edit', 'web', 'execute']
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 mini (copilot)']
 ---
 
 # Curriculum Architect

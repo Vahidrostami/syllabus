@@ -6,10 +6,6 @@ description: >
   audit, deploy. Just say "I want to learn [topic]" or "Teach me [topic]".
 tools: [vscode, execute, read, agent, edit, search, web, browser, 'azure-mcp/*', 'bicep/*', 'pylance-mcp-server/*', vscode.mermaid-chat-features/renderMermaidDiagram, ms-azuretools.vscode-azureresourcegroups/azureActivityLog, ms-azuretools.vscode-containers/containerToolsConfig, ms-toolsai.jupyter/configureNotebook, ms-toolsai.jupyter/listNotebookPackages, ms-toolsai.jupyter/installNotebookPackages, todo]
 agents: ['curriculum-architect', 'content-reviewer', 'lesson-writer', 'quiz-master', 'ui-designer', 'react-developer', 'narration-engineer', 'quality-auditor', 'deployer']
-# No `model` here on purpose: the orchestrator uses whatever you picked in the
-# model picker, and each specialist pins its own. Don't switch models mid-run —
-# a live conversation's prompt cache is per-model, so switching re-bills the
-# whole prefix.
 handoffs: []
 ---
 
@@ -28,8 +24,8 @@ On every invocation, check the `syllabus-output/` directory to determine the cur
 | Nothing / no directory | **BRIEF** | Ask clarifying questions, detect any source document, then → @curriculum-architect |
 | `src/data/source/` only (no syllabus) | **RESEARCH** | Corpus extracted; → @curriculum-architect to build the syllabus |
 | `src/data/syllabus.json` only | **REVIEW** | → @content-reviewer |
-| `src/data/syllabus.json` reviewed | **WRITE** | Run `node scripts/make-module-briefs.mjs`, then fan out → @lesson-writer once per module |
-| `src/data/lessons/` populated | **QUIZ** | Run `node scripts/validate-course-data.mjs`; → @quiz-master only for failing modules |
+| `src/data/syllabus.json` reviewed | **WRITE** | → @lesson-writer |
+| `src/data/lessons/` populated | **QUIZ** | → @quiz-master |
 | `src/data/quizzes/` populated | **DESIGN** | → @ui-designer |
 | `src/lib/theme.js` exists | **BUILD** | → @react-developer |
 | All components exist | **VERIFY** | Run `npm install && npm run build` |
@@ -83,17 +79,8 @@ Print:
    Source: [document name if source-grounded, else "web research"]
 ```
 
-Then create `syllabus-output/` and write the brief to
-`syllabus-output/.briefs/learning-brief.json` (`topic`, `depth`, `style`, `goals`,
-`sources`, `webSupplement`). Every later per-module agent inherits tone and goals
-from that file, so you never have to re-explain them — or re-ask the user.
-
-Ask **all** clarifying questions here, in this phase. Never pause mid-pipeline for
-something you could have asked up front: each pause lets the prompt cache expire
-and the whole context gets re-billed on resume.
-
-Then hand off to @curriculum-architect, passing the `sources` and `webSupplement`
-in the brief so it knows which mode to use.
+Then create `syllabus-output/` and hand off to @curriculum-architect, passing the
+`sources` and `webSupplement` in the brief so it knows which mode to use.
 
 ### Phase Execution
 
@@ -107,36 +94,11 @@ Print: `🔍 [1/9] Curriculum Architect — Syllabus ready: N modules, N lessons
 **Step 2 → @content-reviewer**: Review syllabus against user's goals, adjust
 Print: `🎯 [2/9] Content Reviewer — Adjusted: [changes summary]`
 
-**Step 3 → @lesson-writer (one invocation per module)**: First run
-`node scripts/make-module-briefs.mjs` to slice `syllabus.json` into a small,
-self-contained brief per module. Then invoke @lesson-writer **once for each
-module**, passing only that module's brief path. Each invocation writes the
-module's lessons *and* its quiz.
+**Step 3 → @lesson-writer**: Write lesson content for each module
+Print: `✍️  [3/9] Lesson Writer — N lessons written`
 
-```
-node scripts/make-module-briefs.mjs
-# then, for each entry in syllabus-output/.briefs/index.json:
-#   @lesson-writer  →  "Author syllabus-output/.briefs/mod-01.json"
-#   @lesson-writer  →  "Author syllabus-output/.briefs/mod-02.json"
-#   ...
-```
-
-Never ask one @lesson-writer invocation to write the whole course. Its context
-would grow with every lesson and get re-read on every turn. Give each invocation
-exactly one brief and nothing else.
-Print: `✍️  [3/9] Lesson Writer — N lessons written across N modules`
-
-**Step 4 → validation gate, then @quiz-master only if needed**: step 3 already
-produced the quizzes, so verify them with code rather than a model pass:
-
-```bash
-node scripts/validate-course-data.mjs
-```
-
-If it exits 0, the phase is done — do **not** invoke @quiz-master. If it reports
-failures, invoke @quiz-master once per **failing** module, passing that module's
-brief path and the reported problems. Re-run the validator until it passes.
-Print: `🧩 [4/9] Quiz Master — N questions validated, N modules repaired`
+**Step 4 → @quiz-master**: Create quizzes for each module
+Print: `🧩 [4/9] Quiz Master — N questions, N coding challenges`
 
 **Step 5 → @ui-designer**: Choose theme, design layout (including audio player styling)
 Print: `🎨 [5/9] UI Designer — [theme name] theme, responsive layout, audio player`
@@ -201,8 +163,3 @@ After the pipeline completes:
 6. **The output is a real app.** When you're done, the user should be able to `npm run dev` and see a working tutorial in their browser.
 
 7. **Source-grounded vs. web-researched.** If the user supplies a document, the course is built *from that document* — it's the authority. Web research is only for filling gaps (and marked as supplemental). If no document is supplied, research the topic on the web as usual. Never try to read login-gated URLs; ask for a local file or pasted text instead.
-
-8. **Context economy.** Read `.github/skills/context-economy/SKILL.md`. Shard
-   long phases into per-module invocations, hand deterministic work to the
-   scripts in `scripts/`, and never re-read what you already have. Most of a
-   run's cost is context carried across turns, not content produced.
