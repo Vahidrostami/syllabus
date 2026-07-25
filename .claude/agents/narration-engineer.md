@@ -9,7 +9,8 @@ permissionMode: acceptEdits
 hooks:
   Stop:
     - type: command
-      command: "node .github/hooks/scripts/check-narration-complete.mjs"
+      command: node
+      args: ["${CLAUDE_PROJECT_DIR}/.github/hooks/scripts/check-narration-complete.mjs"]
       timeout: 60
 ---
 

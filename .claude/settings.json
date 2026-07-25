@@ -26,7 +26,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .github/hooks/scripts/session-start.mjs",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.github/hooks/scripts/session-start.mjs"],
             "timeout": 30
           }
         ]
@@ -38,7 +39,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .github/hooks/scripts/guard-command.mjs",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.github/hooks/scripts/guard-command.mjs"],
             "timeout": 15
           }
         ]
@@ -50,7 +52,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .github/hooks/scripts/validate-artifact.mjs",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.github/hooks/scripts/validate-artifact.mjs"],
             "timeout": 30
           }
         ]
@@ -60,7 +63,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .github/hooks/scripts/check-audio-output.mjs",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.github/hooks/scripts/check-audio-output.mjs"],
             "timeout": 30
           }
         ]
@@ -71,7 +75,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .github/hooks/scripts/verify-final.mjs",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.github/hooks/scripts/verify-final.mjs"],
             "timeout": 300
           }
         ]
