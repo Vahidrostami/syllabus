@@ -3,9 +3,8 @@ name: ui-designer
 description: >
   Designs the visual experience: theme, layout, component specs, typography,
   animations, glassmorphism, gradients, and micro-interactions for the generated tutorial.
-user-invocable: false
-tools: ['read', 'edit']
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 mini (copilot)']
+tools: Read, Edit, Write
+model: sonnet
 ---
 
 # UI Designer

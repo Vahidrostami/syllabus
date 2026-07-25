@@ -4,14 +4,15 @@ description: >
   Generates audio narration for all lesson content using Edge TTS. Converts lesson
   JSON into spoken scripts, generates MP3 files, and produces an audio manifest
   for the React audio player.
-user-invocable: false
-tools: ['read', 'edit', 'search', 'execute']
+tools: Read, Grep, Glob, Edit, Write, Bash
 # Mechanical: JSON → spoken script → edge-tts. No reasoning depth required.
-model: ['Claude Haiku 4.5 (copilot)', 'GPT-5 mini (copilot)', 'Claude Sonnet 4.5 (copilot)']
+model: haiku
+permissionMode: acceptEdits
 hooks:
   Stop:
     - type: command
-      command: "node .github/hooks/scripts/check-narration-complete.mjs"
+      command: node
+      args: ["${CLAUDE_PROJECT_DIR}/.github/hooks/scripts/check-narration-complete.mjs"]
       timeout: 60
 ---
 
@@ -34,7 +35,7 @@ You are the **Narration Engineer** of Syllabus. After the React app builds succe
 
 ## Read Your Skill First
 
-Before doing anything, read `.github/skills/audio-narration/SKILL.md` for the complete script conversion rules, voice selection, and quality checklist.
+Before doing anything, read `.claude/skills/audio-narration/SKILL.md` for the complete script conversion rules, voice selection, and quality checklist.
 
 ## Pipeline
 

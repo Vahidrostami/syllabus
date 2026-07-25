@@ -4,9 +4,9 @@ description: >
   Builds the final interactive React application from the design spec,
   lesson content, and quiz data. Production-grade, accessible, responsive
   React code with Vite, Tailwind, glassmorphism, scroll animations, and modern best practices.
-user-invocable: false
-tools: ['read', 'edit', 'search', 'execute']
-model: ['Claude Sonnet 4.5 (copilot)', 'Claude Opus 4.5 (copilot)']
+tools: Read, Grep, Glob, Edit, Write, Bash
+model: sonnet
+permissionMode: acceptEdits
 ---
 
 # React Developer

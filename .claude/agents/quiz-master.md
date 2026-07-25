@@ -4,9 +4,8 @@ description: >
   Repairs and strengthens a SINGLE module's quiz when deterministic validation
   flags it, or when the learner asks for more/harder assessment. Owns the quiz
   schema and question-design standards. Not part of the default happy path.
-user-invocable: false
-tools: ['read', 'edit']
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 mini (copilot)']
+tools: Read, Edit, Write
+model: sonnet
 ---
 
 # Quiz Master
@@ -24,7 +23,7 @@ You are invoked **only** when:
 2. the user explicitly asks for more, harder, or different assessment.
 
 Either way you work on **one module at a time**. Read
-`.github/skills/context-economy/SKILL.md`, then:
+`.claude/skills/context-economy/SKILL.md`, then:
 
 - Read the module brief (`syllabus-output/.briefs/mod-XX.json`) and the existing
   quiz file. Read that module's lesson files **only if** the reported problem
